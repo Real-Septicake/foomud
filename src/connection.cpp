@@ -22,6 +22,10 @@ bool Connection::checkConnection() {
     return Mud::instance().checkConnection(sock);
 }
 
+bool Connection::pendingOutput() {
+    return !obuf.empty();
+}
+
 #define BUFSZ 1024
 
 void Connection::read() {

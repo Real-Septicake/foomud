@@ -61,7 +61,10 @@ bool Mud::run() {
                 max_sock = std::max(max_sock, c->sock);
                 FD_SET(c->sock, &ifds);
                 FD_SET(c->sock, &efds);
-                // if pending output, set ofds
+
+                if(c->pendingOutput()) {
+                    FD_SET(c->sock, &ofds);
+                }
             }
         }
 

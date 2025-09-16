@@ -14,6 +14,7 @@ class Connection {
         bool closing;
         ~Connection();
         Connection(int sock, int port, std::string addr);
+        bool pendingOutput();
         bool checkConnection();
         void read();
         void write();
