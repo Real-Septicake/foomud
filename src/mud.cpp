@@ -1,3 +1,4 @@
+#include "asio/error.hpp"
 #include "asio/error_code.hpp"
 #include "asio/io_context.hpp"
 #include "connection.hpp"
@@ -8,7 +9,6 @@
 #include <exception>
 #include <mud.hpp>
 #include <iostream>
-#include <set>
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -52,7 +52,10 @@ bool Mud::run() {
     timeout.tv_usec = 500000;
     std::cout << "starting loop" << std::endl;
 
-    std::cout << acceptor.non_blocking() << std::endl;
+    while(running) {
+        acceptConnections();
+    }
+    endConnection();
 
     return true;
 
@@ -100,6 +103,26 @@ bool Mud::checkConnection(const int &sock) {
 }
 
 bool Mud::acceptConnections() {
+    while(true) {
+        asio::ip::tcp::socket s = asio::ip::tcp::socket(context);
+        asio::error_code e;
+        auto _ = acceptor.accept(s, e);
+        if(e) {
+            if(e == asio::error::would_block) {
+                break;
+            }
+            perror("Accept");
+            return false;
+        }
+
+        s.non_blocking(true);
+
+        std::cout << "Addr:" << s.remote_endpoint().address().to_string() <<
+            "|Port:" << s.remote_endpoint().port() << std::endl;
+
+        connections.push_back(new Connection(std::move(s)));
+    }
+    return true;
 //     int incoming_sock;
 //     struct sockaddr_in incoming_addr;
 //     socklen_t addr_sz = sizeof(incoming_addr);
@@ -132,8 +155,12 @@ bool Mud::closeConnection(const int &sock) {
 }
 
 bool Mud::endConnection() {
-//     return (serv_sock == -1) ? false : this->closeConnection(serv_sock);
-     return true;
+    try {
+        acceptor.close();
+        return true;
+    } catch(...) {
+        return false;
+    }
 }
 
 void Mud::removeClosedConnections() {
