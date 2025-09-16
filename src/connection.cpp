@@ -14,6 +14,7 @@ Connection::Connection(asio::ip::tcp::socket s) :
 }
 
 Connection::~Connection() {
+    std::cout << "killed connection" << std::endl;
 //     if(checkConnection()) {
 //         std::cout << "Closing socket: " << sock << std::endl;
 //         Mud::instance().closeConnection(sock);
@@ -35,13 +36,13 @@ void Connection::read() {
     asio::async_read(sock, 
             asio::buffer(ibuf),
             [this](std::error_code e, std::size_t length) {
-                if(!e && length) {
+                if(!e && !ibuf.empty()) {
                     std::cout << ibuf << std::endl;
                 }
 
                 read();
             }
-            );
+        );
 //     char buf[BUFSZ];
 //     if(closing)
 //         return;

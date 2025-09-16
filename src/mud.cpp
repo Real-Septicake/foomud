@@ -1,5 +1,3 @@
-#include "asio/error.hpp"
-#include "asio/error_code.hpp"
 #include "asio/io_context.hpp"
 #include "connection.hpp"
 #include <asm-generic/socket.h>
@@ -21,7 +19,7 @@
 static fd_set ifds, ofds, efds;
 
 void sig_handler(int) {
-    std::cout << std::endl << "damn" << std::endl;
+    std::cout << std::endl << "signal recieved" << std::endl;
     Mud::instance().shutdown();
 }
 
@@ -50,8 +48,9 @@ bool Mud::run() {
 
     context.run();
 
-    return true;
+    endConnection();
 
+    return true;
 //     do {
 //         int activity = select(max_sock + 1, &ifds, &ofds, &efds, &timeout);
 //         if(activity < 0 && errno != EINTR) {
@@ -73,7 +72,6 @@ bool Mud::run() {
 void Mud::shutdown() {
     std::cout << "Shutdown called" << std::endl;
     context.stop();
-    endConnection();
 }
 
 bool Mud::startConnection() {
@@ -160,6 +158,7 @@ bool Mud::closeConnection(const int &sock) {
 
 bool Mud::endConnection() {
     try {
+        std::cout << "ending" << std::endl;
         acceptor.close();
         return true;
     } catch(...) {
