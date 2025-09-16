@@ -30,7 +30,6 @@ Mud::Mud() :
     acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 4000)),
     running(true)
 {
-    acceptor.non_blocking(true);
 }
 
 Mud::~Mud() {
@@ -39,8 +38,6 @@ Mud::~Mud() {
 bool Mud::run() {
     signal(SIGTERM, sig_handler);
     signal(SIGINT, sig_handler);
-
-    context.run();
 
     if(!startConnection()) {
         std::cerr << "Error starting server socket" << std::endl;
@@ -51,9 +48,7 @@ bool Mud::run() {
 
     acceptConnections();
 
-    while(running) {
-    }
-    endConnection();
+    context.run();
 
     return true;
 
@@ -77,7 +72,8 @@ bool Mud::run() {
 
 void Mud::shutdown() {
     std::cout << "Shutdown called" << std::endl;
-    running = false;
+    context.stop();
+    endConnection();
 }
 
 bool Mud::startConnection() {
@@ -100,7 +96,7 @@ bool Mud::checkConnection(const int &sock) {
     return getsockopt(sock, SOL_SOCKET, SO_ERROR, &err_code, &err_code_sz) == 0;
 }
 
-bool Mud::acceptConnections() {
+void Mud::acceptConnections() {
     acceptor.async_accept(
         [this](std::error_code e, asio::ip::tcp::socket s) {
             if(!e) {
@@ -155,7 +151,7 @@ bool Mud::acceptConnections() {
 //             << "|FD:" << incoming_sock << std::endl;
 //         connections.push_back(new Connection(incoming_sock, incoming_addr.sin_port, inet_ntoa(incoming_addr.sin_addr)));
 //     }
-     return true;
+     return;
 }
 
 bool Mud::closeConnection(const int &sock) {

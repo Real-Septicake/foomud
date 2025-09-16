@@ -21,7 +21,7 @@ class Mud {
         bool run();
         void shutdown();
         bool startConnection();
-        bool acceptConnections();
+        void acceptConnections();
         void processConnection(std::shared_ptr<Connection>);
         bool checkConnection(const int &);
         bool closeConnection(const int &);
