@@ -1,4 +1,8 @@
+#include "asio/buffer.hpp"
+#include "asio/read.hpp"
 #include <connection.hpp>
+#include <iostream>
+#include <ostream>
 #include <utils.hpp>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -6,6 +10,7 @@
 Connection::Connection(asio::ip::tcp::socket s) :
     sock(std::move(s)), ibuf(), obuf()
 {
+    read();
 }
 
 Connection::~Connection() {
@@ -27,6 +32,16 @@ bool Connection::pendingOutput() {
 #define BUFSZ 1024
 
 void Connection::read() {
+    asio::async_read(sock, 
+            asio::buffer(ibuf),
+            [this](std::error_code e, std::size_t length) {
+                if(!e && length) {
+                    std::cout << ibuf << std::endl;
+                }
+
+                read();
+            }
+            );
 //     char buf[BUFSZ];
 //     if(closing)
 //         return;
