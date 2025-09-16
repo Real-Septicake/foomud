@@ -104,10 +104,11 @@ bool Mud::checkConnection(const int &sock) {
 
 bool Mud::acceptConnections() {
     while(true) {
-        asio::ip::tcp::socket s = asio::ip::tcp::socket(context);
+        auto c = new Connection(context);
         asio::error_code e;
-        auto _ = acceptor.accept(s, e);
+        auto _ = acceptor.accept(c->sock, e);
         if(e) {
+            delete c;
             if(e == asio::error::would_block) {
                 break;
             }
@@ -115,12 +116,12 @@ bool Mud::acceptConnections() {
             return false;
         }
 
-        s.non_blocking(true);
+        c->sock.non_blocking(true);
 
-        std::cout << "Addr:" << s.remote_endpoint().address().to_string() <<
-            "|Port:" << s.remote_endpoint().port() << std::endl;
+        std::cout << "Addr:" << c->sock.remote_endpoint().address().to_string() <<
+            "|Port:" << c->sock.remote_endpoint().port() << std::endl;
 
-        connections.push_back(new Connection(std::move(s)));
+        connections.push_back(c);
     }
     return true;
 //     int incoming_sock;

@@ -1,3 +1,4 @@
+#include "asio/io_context.hpp"
 #include "mud.hpp"
 #include <connection.hpp>
 #include <memory>
@@ -6,8 +7,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-Connection::Connection(asio::ip::tcp::socket &&s) :
-    sock(s), ibuf(), obuf()
+Connection::Connection(asio::io_context &c) :
+    sock(c), ibuf(), obuf()
 {
 }
 
