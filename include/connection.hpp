@@ -5,10 +5,9 @@
 #include <asio.hpp>
 
 class Connection {
-    private:
+    public:
         std::string ibuf;
         std::string obuf;
-    public:
         asio::ip::tcp::socket sock;
         bool closed;
         ~Connection();

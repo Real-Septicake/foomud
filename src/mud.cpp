@@ -1,7 +1,9 @@
 #include "asio/io_context.hpp"
 #include "connection.hpp"
+#include "repeating_timer.hpp"
 #include <asm-generic/socket.h>
 #include <cerrno>
+#include <chrono>
 #include <csignal>
 #include <cstdio>
 #include <exception>
@@ -15,6 +17,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <unordered_set>
 
 static fd_set ifds, ofds, efds;
 
@@ -43,6 +46,30 @@ bool Mud::run() {
     }
 
     std::cout << "starting loop" << std::endl;
+
+    RepeatingTimer timer(context, std::chrono::milliseconds(50));
+
+    timer.start([this](std::error_code)
+            {
+                std::unordered_set<std::shared_ptr<Connection>> remove;
+                for(auto c = connections.begin();
+                        c != connections.end();
+                        c++) {
+                    if((*c)->closed)
+                        remove.insert(*c);
+                }
+                for(auto c : remove) {
+                    for(auto conn = connections.begin();
+                            conn != connections.end();
+                            conn++) {
+                        if(c == *conn) {
+                            connections.erase(conn);
+                            break;
+                        }
+                    }
+                }
+            }
+        );
 
     acceptConnections();
 
@@ -100,7 +127,10 @@ void Mud::acceptConnections() {
             if(!e) {
                 std::cout << "Addr:" << s.remote_endpoint().address().to_string() <<
                     "|Port:" << s.remote_endpoint().port() << std::endl;
-                this->connections.push_back(std::make_shared<Connection>(std::move(s)));
+                auto c = std::make_shared<Connection>(std::move(s));
+                c->obuf += "Greetings\n";
+                c->write();
+                this->connections.push_back(c);
             }
 
             acceptConnections();

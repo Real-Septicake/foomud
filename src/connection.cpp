@@ -19,9 +19,11 @@ Connection::Connection(asio::ip::tcp::socket s) :
 Connection::~Connection() {
     try {
         sock.close();
-        std::cout << "Closed socket" << std::endl;
+        std::cout <<
+            (closed ? "Client closed connection" : "Closed socket")
+            << std::endl;
     } catch(...) {
-        std::cout << "Socket already closed" << std::endl;
+        std::cout << "Error closing socket" << std::endl;
     }
 }
 
@@ -44,7 +46,6 @@ void Connection::read() {
                     obuf = "written\n";
                     write();
                 } else if(e == asio::error::eof) {
-                    std::cout << "closed" << std::endl;
                     this->closed = true;
                     return;
                 } else {
