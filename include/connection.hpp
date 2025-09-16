@@ -1,7 +1,6 @@
 #ifndef CONNECTION_HPP
 #define CONNECTION_HPP
 
-#include "asio/io_context.hpp"
 #include <string>
 #include <asio.hpp>
 

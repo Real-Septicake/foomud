@@ -7,6 +7,7 @@
 #include <csignal>
 #include <cstdio>
 #include <exception>
+#include <memory>
 #include <mud.hpp>
 #include <iostream>
 #include <sys/select.h>
@@ -33,27 +34,24 @@ Mud::Mud() :
 }
 
 Mud::~Mud() {
-    for(auto c : connections) {
-        delete c;
-    }
 }
 
 bool Mud::run() {
     signal(SIGTERM, sig_handler);
     signal(SIGINT, sig_handler);
 
+    context.run();
+
     if(!startConnection()) {
         std::cerr << "Error starting server socket" << std::endl;
         return false;
     }
 
-    struct timeval timeout;
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 500000;
     std::cout << "starting loop" << std::endl;
 
+    acceptConnections();
+
     while(running) {
-        acceptConnections();
     }
     endConnection();
 
@@ -93,7 +91,7 @@ bool Mud::startConnection() {
     return true;
 }
 
-void Mud::processConnection(Connection *c) {
+void Mud::processConnection(std::shared_ptr<Connection> c) {
 }
 
 bool Mud::checkConnection(const int &sock) {
@@ -103,6 +101,17 @@ bool Mud::checkConnection(const int &sock) {
 }
 
 bool Mud::acceptConnections() {
+    acceptor.async_accept(
+        [this](std::error_code e, asio::ip::tcp::socket s) {
+            if(!e) {
+                std::cout << "Addr:" << s.remote_endpoint().address().to_string() <<
+                    "|Port:" << s.remote_endpoint().port() << std::endl;
+                this->connections.push_back(std::make_shared<Connection>(std::move(s)));
+            }
+
+            acceptConnections();
+        });
+    /*
     while(true) {
         asio::error_code e;
         auto s = acceptor.accept(e);
@@ -121,7 +130,7 @@ bool Mud::acceptConnections() {
 
         connections.push_back(new Connection(std::move(s)));
     }
-    return true;
+    return true;*/
 //     int incoming_sock;
 //     struct sockaddr_in incoming_addr;
 //     socklen_t addr_sz = sizeof(incoming_addr);
@@ -178,7 +187,7 @@ void Mud::removeClosedConnections() {
 //     }
 }
 
-void Mud::removeConnection(Connection *connection) {
+void Mud::removeConnection(std::shared_ptr<Connection> connection) {
     for(auto it = connections.begin(); it != connections.end(); it++) {
         if(connection == *it) {
             connections.erase(it);
