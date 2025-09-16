@@ -1,13 +1,15 @@
 #ifndef MUD_HPP
 #define MUD_HPP
 
+#include "asio/io_context.hpp"
 #include <vector>
 #include <connection.hpp>
+#include <asio/ip/tcp.hpp>
 
 class Mud {
     private:
-        int serv_sock;
-        int max_socks;
+        asio::io_context context;
+        asio::ip::tcp::acceptor acceptor;
         long port;
         bool running;
         int max_sock;

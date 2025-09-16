@@ -2,18 +2,17 @@
 #define CONNECTION_HPP
 
 #include <string>
+#include <asio.hpp>
 
 class Connection {
     private:
         std::string ibuf;
         std::string obuf;
     public:
-        int sock;
-        int port;
-        std::string addr;
+        asio::ip::tcp::socket sock;
         bool closing;
         ~Connection();
-        Connection(int sock, int port, std::string addr);
+        Connection(asio::io_context &);
         bool pendingOutput();
         bool checkConnection();
         void read();

@@ -1,8 +1,11 @@
+#include "asio/error_code.hpp"
+#include "asio/io_context.hpp"
 #include "connection.hpp"
 #include <asm-generic/socket.h>
 #include <cerrno>
 #include <csignal>
 #include <cstdio>
+#include <exception>
 #include <mud.hpp>
 #include <iostream>
 #include <set>
@@ -22,12 +25,11 @@ void sig_handler(int) {
 }
 
 Mud::Mud() :
-    serv_sock(-1),
-    max_socks(-1),
-    running(true),
-    port(4001)
+    context(),
+    acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 4000)),
+    running(true)
 {
-
+    acceptor.non_blocking(true);
 }
 
 Mud::~Mud() {
@@ -48,46 +50,28 @@ bool Mud::run() {
     struct timeval timeout;
     timeout.tv_sec = 0;
     timeout.tv_usec = 500000;
+    std::cout << "starting loop" << std::endl;
 
-    do {
-        FD_ZERO(&ifds);
-        FD_ZERO(&ofds);
-        FD_ZERO(&efds);
+    std::cout << acceptor.non_blocking() << std::endl;
 
-        FD_SET(serv_sock, &ifds);
-
-        for(auto c : connections) {
-            if(c->checkConnection()) {
-                max_sock = std::max(max_sock, c->sock);
-                FD_SET(c->sock, &ifds);
-                FD_SET(c->sock, &efds);
-
-                if(c->pendingOutput()) {
-                    FD_SET(c->sock, &ofds);
-                }
-            }
-        }
-
-        int activity = select(max_sock + 1, &ifds, &ofds, &efds, &timeout);
-        if(activity < 0 && errno != EINTR) {
-            perror("Select");
-        }
-
-        if(FD_ISSET(serv_sock, &ifds)) {
-            std::cout << "Accepting" << std::endl;
-            if(!acceptConnections()) {
-                std::cerr << "Connection's fucked" << std::endl;
-            }
-        }
-
-        for(auto c : connections) {
-            processConnection(c);
-        }
-
-        removeClosedConnections();
-    } while(running);
-    endConnection();
     return true;
+
+//     do {
+//         int activity = select(max_sock + 1, &ifds, &ofds, &efds, &timeout);
+//         if(activity < 0 && errno != EINTR) {
+//             perror("Select");
+//         }
+// 
+//         if(acceptor.non_blocking()
+// 
+//         for(auto c : connections) {
+//             processConnection(c);
+//         }
+// 
+//         removeClosedConnections();
+//     } while(running);
+//     endConnection();
+//     return true;
 }
 
 void Mud::shutdown() {
@@ -96,40 +80,10 @@ void Mud::shutdown() {
 }
 
 bool Mud::startConnection() {
-    struct sockaddr_in sock_addr;
-    if((serv_sock = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("Creating Server Socket");
-        return false;
-    }
-
-    if(fcntl(serv_sock, F_SETFL, FNDELAY) == -1) {
-        perror("Server Socket FCNTL");
-        return false;
-    }
-
-    struct linger l = linger();
-    if(setsockopt(serv_sock, SOL_SOCKET, SO_LINGER, (char *)&l, sizeof(l)) < 0) {
-        perror("Linger");
-        return false;
-    }
-
-    int x = 1;
-    if(setsockopt(serv_sock, SOL_SOCKET, SO_REUSEADDR, (char *)&x, sizeof(x)) == -1) {
-        perror("Reuse");
-        return false;
-    }
-
-    sock_addr.sin_family = AF_INET;
-    sock_addr.sin_port = htons(port);
-    sock_addr.sin_addr.s_addr = INADDR_ANY;
-
-    if(bind(serv_sock, (struct sockaddr *)&sock_addr, sizeof(sockaddr)) < 0) {
-        perror("Bind");
-        return false;
-    }
-
-    if(listen(serv_sock, SOMAXCONN) == -1) {
-        perror("Listen");
+    try {
+        acceptor.listen();
+    } catch(std::exception &e) {
+        std::cerr << e.what() << std::endl;
         return false;
     }
 
@@ -137,20 +91,6 @@ bool Mud::startConnection() {
 }
 
 void Mud::processConnection(Connection *c) {
-    if(c->checkConnection()) {
-        if(FD_ISSET(c->sock, &efds)) {
-        }
-    }
-    if(c->checkConnection()) {
-        if(FD_ISSET(c->sock, &ifds)) {
-            c->read();
-        }
-    }
-    if(c->checkConnection()) {
-        if(FD_ISSET(c->sock, &ofds)) {
-            c->write();
-        }
-    }
 }
 
 bool Mud::checkConnection(const int &sock) {
@@ -160,31 +100,31 @@ bool Mud::checkConnection(const int &sock) {
 }
 
 bool Mud::acceptConnections() {
-    int incoming_sock;
-    struct sockaddr_in incoming_addr;
-    socklen_t addr_sz = sizeof(incoming_addr);
-
-    while(true) {
-        incoming_sock = accept(serv_sock, (struct sockaddr *)&incoming_addr, &addr_sz);
-        if(incoming_sock == -1) {
-            if(errno == EWOULDBLOCK) {
-                break;
-            }
-            perror("Accept");
-            return false;
-        }
-
-        if(fcntl(incoming_sock, F_SETFL, FNDELAY) == -1) {
-            perror("Incoming Socket FCNTL");
-            return false;
-        }
-
-        std::cout << "Addr:" << inet_ntoa(incoming_addr.sin_addr)
-            << "|Port:" << incoming_addr.sin_port
-            << "|FD:" << incoming_sock << std::endl;
-        connections.push_back(new Connection(incoming_sock, incoming_addr.sin_port, inet_ntoa(incoming_addr.sin_addr)));
-    }
-    return true;
+//     int incoming_sock;
+//     struct sockaddr_in incoming_addr;
+//     socklen_t addr_sz = sizeof(incoming_addr);
+// 
+//     while(true) {
+//         incoming_sock = accept(serv_sock, (struct sockaddr *)&incoming_addr, &addr_sz);
+//         if(incoming_sock == -1) {
+//             if(errno == EWOULDBLOCK) {
+//                 break;
+//             }
+//             perror("Accept");
+//             return false;
+//         }
+// 
+//         if(fcntl(incoming_sock, F_SETFL, FNDELAY) == -1) {
+//             perror("Incoming Socket FCNTL");
+//             return false;
+//         }
+// 
+//         std::cout << "Addr:" << inet_ntoa(incoming_addr.sin_addr)
+//             << "|Port:" << incoming_addr.sin_port
+//             << "|FD:" << incoming_sock << std::endl;
+//         connections.push_back(new Connection(incoming_sock, incoming_addr.sin_port, inet_ntoa(incoming_addr.sin_addr)));
+//     }
+     return true;
 }
 
 bool Mud::closeConnection(const int &sock) {
@@ -192,23 +132,24 @@ bool Mud::closeConnection(const int &sock) {
 }
 
 bool Mud::endConnection() {
-    return (serv_sock == -1) ? false : this->closeConnection(serv_sock);
+//     return (serv_sock == -1) ? false : this->closeConnection(serv_sock);
+     return true;
 }
 
 void Mud::removeClosedConnections() {
-    std::set<Connection *> remove;
-    for(auto c : connections) {
-        if(!c->checkConnection()) {
-            remove.insert(c);
-        }
-    }
-
-    for(auto it = remove.begin(); it != remove.end(); it++) {
-        auto connection = *it;
-        std::cout << "Removing connection: " << connection->addr << std::endl;
-        removeConnection(connection);
-        delete connection;
-    }
+//     std::set<Connection *> remove;
+//     for(auto c : connections) {
+//         if(!c->checkConnection()) {
+//             remove.insert(c);
+//         }
+//     }
+// 
+//     for(auto it = remove.begin(); it != remove.end(); it++) {
+//         auto connection = *it;
+//         std::cout << "Removing connection: " << connection->addr << std::endl;
+//         removeConnection(connection);
+//         delete connection;
+//     }
 }
 
 void Mud::removeConnection(Connection *connection) {
