@@ -10,7 +10,7 @@ class Connection {
         std::string obuf;
     public:
         asio::ip::tcp::socket sock;
-        bool closing;
+        bool closed;
         ~Connection();
         Connection(asio::ip::tcp::socket);
         bool pendingOutput();

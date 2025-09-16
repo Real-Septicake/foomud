@@ -1,6 +1,7 @@
 #include "asio/buffer.hpp"
 #include "asio/error.hpp"
 #include "asio/read_until.hpp"
+#include "asio/write.hpp"
 #include <connection.hpp>
 #include <iostream>
 #include <ostream>
@@ -16,16 +17,17 @@ Connection::Connection(asio::ip::tcp::socket s) :
 }
 
 Connection::~Connection() {
-    std::cout << "killed connection" << std::endl;
-//     if(checkConnection()) {
-//         std::cout << "Closing socket: " << sock << std::endl;
-//         Mud::instance().closeConnection(sock);
-//     }
+    try {
+        sock.close();
+        std::cout << "Closed socket" << std::endl;
+    } catch(...) {
+        std::cout << "Socket already closed" << std::endl;
+    }
 }
 
 bool Connection::checkConnection() {
 //     return Mud::instance().checkConnection(sock);
-     return true;
+     return closed;
 }
 
 bool Connection::pendingOutput() {
@@ -39,54 +41,29 @@ void Connection::read() {
                 if(!e) {
                     std::cout << ibuf << std::flush;
                     ibuf.clear();
-                }
-
-                if(e == asio::error::eof) {
+                    obuf = "written\n";
+                    write();
+                } else if(e == asio::error::eof) {
                     std::cout << "closed" << std::endl;
+                    this->closed = true;
                     return;
+                } else {
+                    perror("write");
                 }
 
                 read();
             }
         );
-//     char buf[BUFSZ];
-//     if(closing)
-//         return;
-// 
-//     ssize_t nread = recv(sock, &buf, BUFSZ - 1, MSG_DONTWAIT);
-//     if(nread <= 0) {
-//         perror("Read");
-//         Mud::instance().closeConnection(sock);
-//         sock = -1;
-//         return;
-//     }
-// 
-//     std::size_t uread = static_cast<std::size_t>(nread);
-//     ibuf = std::string(buf, uread);
-//     ibuf[uread] = 0;
-//     std::cout << ibuf << std::endl;
-// 
-//     obuf += "\0" + ibuf;
 }
 
 void Connection::write() {
-//     while(sock != -1 && !obuf.empty()) {
-//         findReplace(obuf, "\n", "\r\n");
-//         std::size_t ilen = std::min<size_t>(obuf.size(), BUFSZ);
-// 
-//         ssize_t nwrite = send(sock, obuf.c_str(), obuf.size(), MSG_NOSIGNAL);
-// 
-//         if(nwrite <= 0) {
-//             perror("Write");
-//             return;
-//         }
-// 
-//         std::size_t uwrite = static_cast<std::size_t>(uwrite);
-// 
-//         obuf.erase(0, obuf.size());
-// 
-//         if(uwrite < nwrite) {
-//             break;
-//         }
-//     }
+    asio::async_write(sock, 
+            asio::buffer(obuf),
+            [this](std::error_code e, std::size_t length) {
+                if(e) {
+                    perror("write");
+                }
+                obuf.clear();
+            }
+        );
 }
