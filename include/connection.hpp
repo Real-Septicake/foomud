@@ -13,7 +13,7 @@ class Connection {
         asio::ip::tcp::socket sock;
         bool closing;
         ~Connection();
-        Connection(asio::io_context &);
+        Connection(asio::ip::tcp::socket);
         bool pendingOutput();
         bool checkConnection();
         void read();

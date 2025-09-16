@@ -7,8 +7,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-Connection::Connection(asio::io_context &c) :
-    sock(c), ibuf(), obuf()
+Connection::Connection(asio::ip::tcp::socket s) :
+    sock(std::move(s)), ibuf(), obuf()
 {
 }
 
