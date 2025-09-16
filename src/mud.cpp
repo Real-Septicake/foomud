@@ -47,7 +47,7 @@ bool Mud::run() {
 
     struct timeval timeout;
     timeout.tv_sec = 0;
-    timeout.tv_usec = 250000;
+    timeout.tv_usec = 500000;
 
     do {
         FD_ZERO(&ifds);
@@ -145,6 +145,7 @@ void Mud::processConnection(Connection *c) {
     }
     if(c->checkConnection()) {
         if(FD_ISSET(c->sock, &ofds)) {
+            c->write();
         }
     }
 }
