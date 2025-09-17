@@ -12,6 +12,7 @@
 #include <iostream>
 #include <sys/select.h>
 #include <sys/socket.h>
+#include <system_error>
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -49,27 +50,7 @@ bool Mud::run() {
 
     RepeatingTimer timer(context, std::chrono::milliseconds(50));
 
-    timer.start([this](std::error_code)
-            {
-                std::unordered_set<std::shared_ptr<Connection>> remove;
-                for(auto c = connections.begin();
-                        c != connections.end();
-                        c++) {
-                    if((*c)->closed)
-                        remove.insert(*c);
-                }
-                for(auto c : remove) {
-                    for(auto conn = connections.begin();
-                            conn != connections.end();
-                            conn++) {
-                        if(c == *conn) {
-                            connections.erase(conn);
-                            break;
-                        }
-                    }
-                }
-            }
-        );
+    timer.start([this](std::error_code) { this->removeClosedConnections(); });
 
     acceptConnections();
 
@@ -78,22 +59,6 @@ bool Mud::run() {
     endConnection();
 
     return true;
-//     do {
-//         int activity = select(max_sock + 1, &ifds, &ofds, &efds, &timeout);
-//         if(activity < 0 && errno != EINTR) {
-//             perror("Select");
-//         }
-// 
-//         if(acceptor.non_blocking()
-// 
-//         for(auto c : connections) {
-//             processConnection(c);
-//         }
-// 
-//         removeClosedConnections();
-//     } while(running);
-//     endConnection();
-//     return true;
 }
 
 void Mud::shutdown() {
@@ -135,50 +100,6 @@ void Mud::acceptConnections() {
 
             acceptConnections();
         });
-    /*
-    while(true) {
-        asio::error_code e;
-        auto s = acceptor.accept(e);
-        if(e) {
-            if(e == asio::error::would_block) {
-                break;
-            }
-            perror("Accept");
-            return false;
-        }
-
-        s.non_blocking(true);
-
-        std::cout << "Addr:" << s.remote_endpoint().address().to_string() <<
-            "|Port:" << s.remote_endpoint().port() << std::endl;
-
-        connections.push_back(new Connection(std::move(s)));
-    }
-    return true;*/
-//     int incoming_sock;
-//     struct sockaddr_in incoming_addr;
-//     socklen_t addr_sz = sizeof(incoming_addr);
-// 
-//     while(true) {
-//         incoming_sock = accept(serv_sock, (struct sockaddr *)&incoming_addr, &addr_sz);
-//         if(incoming_sock == -1) {
-//             if(errno == EWOULDBLOCK) {
-//                 break;
-//             }
-//             perror("Accept");
-//             return false;
-//         }
-// 
-//         if(fcntl(incoming_sock, F_SETFL, FNDELAY) == -1) {
-//             perror("Incoming Socket FCNTL");
-//             return false;
-//         }
-// 
-//         std::cout << "Addr:" << inet_ntoa(incoming_addr.sin_addr)
-//             << "|Port:" << incoming_addr.sin_port
-//             << "|FD:" << incoming_sock << std::endl;
-//         connections.push_back(new Connection(incoming_sock, incoming_addr.sin_port, inet_ntoa(incoming_addr.sin_addr)));
-//     }
      return;
 }
 
@@ -197,19 +118,18 @@ bool Mud::endConnection() {
 }
 
 void Mud::removeClosedConnections() {
-//     std::set<Connection *> remove;
-//     for(auto c : connections) {
-//         if(!c->checkConnection()) {
-//             remove.insert(c);
-//         }
-//     }
-// 
-//     for(auto it = remove.begin(); it != remove.end(); it++) {
-//         auto connection = *it;
-//         std::cout << "Removing connection: " << connection->addr << std::endl;
-//         removeConnection(connection);
-//         delete connection;
-//     }
+        std::unordered_set<std::shared_ptr<Connection>> remove;
+        for(auto c = connections.begin();
+                c != connections.end();
+                ++c) {
+            if((*c)->closed)
+                remove.insert(*c);
+        }
+        for(auto c : remove) {
+            std::cout << "Closing [" << c->sock.remote_endpoint().address().to_string() << "]:"
+                << c->sock.remote_endpoint().port() << std::endl;
+            removeConnection(c);
+        }
 }
 
 void Mud::removeConnection(std::shared_ptr<Connection> connection) {
@@ -218,6 +138,13 @@ void Mud::removeConnection(std::shared_ptr<Connection> connection) {
             connections.erase(it);
             return;
         }
+    }
+}
+
+void Mud::broadcast(const std::string &s) {
+    for(auto c : connections) {
+        c->obuf += s;
+        c->write();
     }
 }
 

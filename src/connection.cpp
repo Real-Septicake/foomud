@@ -2,6 +2,7 @@
 #include "asio/error.hpp"
 #include "asio/read_until.hpp"
 #include "asio/write.hpp"
+#include "mud.hpp"
 #include <connection.hpp>
 #include <iostream>
 #include <ostream>
@@ -10,7 +11,7 @@
 #include <sys/types.h>
 
 Connection::Connection(asio::ip::tcp::socket s) :
-    sock(std::move(s)), ibuf(), obuf()
+    sock(std::move(s)), ibuf(), obuf(), closed(false)
 {
     ibuf.resize(1024);
     read();
@@ -42,14 +43,15 @@ void Connection::read() {
             [this](std::error_code e, std::size_t length) {
                 if(!e) {
                     std::cout << ibuf << std::flush;
+                    Mud::instance().broadcast(ibuf);
                     ibuf.clear();
-                    obuf = "written\n";
-                    write();
                 } else if(e == asio::error::eof) {
                     this->closed = true;
                     return;
                 } else {
-                    perror("write");
+                    this->closed = true;
+                    perror("read");
+                    return;
                 }
 
                 read();

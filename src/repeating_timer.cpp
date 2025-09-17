@@ -5,9 +5,13 @@ RepeatingTimer::RepeatingTimer(asio::io_context &c, std::chrono::milliseconds du
 {
 }
 
-void RepeatingTimer::start(callback cb) {
+void RepeatingTimer::start(const callback cb) {
     this->cb = cb;
     init();
+}
+
+void RepeatingTimer::stop() {
+    running = false;
 }
 
 void RepeatingTimer::init() {
@@ -15,7 +19,8 @@ void RepeatingTimer::init() {
             {
                 cb(e);
                 timer.expires_at(timer.expiry() + duration);
-                init();
+                if(running)
+                    init();
             }
         );
 }

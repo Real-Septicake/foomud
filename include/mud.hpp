@@ -28,6 +28,7 @@ class Mud {
         bool endConnection();
         void removeClosedConnections();
         void removeConnection(std::shared_ptr<Connection>);
+        void broadcast(const std::string &);
         static Mud& instance();
 };
 

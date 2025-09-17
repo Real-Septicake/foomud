@@ -9,8 +9,10 @@ class RepeatingTimer {
     public:
         RepeatingTimer(asio::io_context &, std::chrono::milliseconds);
         void start(callback);
+        void stop();
     private:
         void init();
+        bool running = true;
         asio::steady_timer timer;
         std::chrono::milliseconds duration;
         callback cb;
