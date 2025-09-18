@@ -1,5 +1,7 @@
 #include "asio/buffer.hpp"
+#include "asio/completion_condition.hpp"
 #include "asio/error.hpp"
+#include "asio/ip/tcp.hpp"
 #include "asio/read_until.hpp"
 #include "asio/write.hpp"
 #include "mud.hpp"
@@ -38,13 +40,16 @@ bool Connection::pendingOutput() {
 }
 
 void Connection::read() {
-    asio::async_read_until(sock, 
-            asio::dynamic_buffer(ibuf), '\n',
+    asio::async_read(sock,
+            asio::buffer(ibuf, 1024),
+            asio::transfer_at_least(1),
             [this](std::error_code e, std::size_t length) {
                 if(!e) {
-                    std::cout << ibuf << std::flush;
-                    Mud::instance().broadcast(ibuf);
+                    std::cout << length << std::endl;
+//                     std::cout << ibuf << std::flush;
+//                     Mud::instance().broadcast(ibuf);
                     ibuf.clear();
+                    ibuf.resize(1024);
                 } else if(e == asio::error::eof) {
                     this->closed = true;
                     return;
@@ -53,7 +58,7 @@ void Connection::read() {
                     perror("read");
                     return;
                 }
-
+loop:
                 read();
             }
         );
