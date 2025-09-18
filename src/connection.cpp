@@ -11,7 +11,8 @@
 #include <sys/types.h>
 
 Connection::Connection(asio::ip::tcp::socket s) :
-    sock(std::move(s)), ibuf(), obuf(), closed(false)
+    sock(std::move(s)), ibuf(), obuf(), closed(false),
+    has_input(false)
 {
     ibuf.resize(1024);
     read();
@@ -37,7 +38,7 @@ bool Connection::pendingOutput() {
 }
 
 bool Connection::pendingInput() {
-    return !ibuf.empty();
+    return has_input;
 }
 
 void Connection::read() {
@@ -45,9 +46,10 @@ void Connection::read() {
             asio::dynamic_buffer(ibuf),
             asio::transfer_at_least(1),
             [this](std::error_code e, std::size_t length) {
-                if(!e)
+                if(!e) {
                     std::cout << length << std::endl;
-                else if(e == asio::error::eof) {
+                    has_input = true;
+                } else if(e == asio::error::eof) {
                     this->closed = true;
                     return;
                 } else {

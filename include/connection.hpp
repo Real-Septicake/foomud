@@ -10,6 +10,7 @@ class Connection {
         std::string obuf;
         asio::ip::tcp::socket sock;
         bool closed;
+        bool has_input;
         ~Connection();
         Connection(asio::ip::tcp::socket);
         bool pendingOutput();
