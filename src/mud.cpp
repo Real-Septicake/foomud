@@ -50,7 +50,11 @@ bool Mud::run() {
 
     RepeatingTimer timer(context, std::chrono::milliseconds(50));
 
-    timer.start([this](std::error_code) { this->removeClosedConnections(); });
+    timer.start([this](std::error_code) {
+            this->removeClosedConnections();
+            for(auto c : this->connections)
+                this->processConnection(c);
+        });
 
     acceptConnections();
 
@@ -78,6 +82,9 @@ bool Mud::startConnection() {
 }
 
 void Mud::processConnection(std::shared_ptr<Connection> c) {
+    if(c->pendingOutput()) {
+        c->write();
+    }
 }
 
 bool Mud::checkConnection(const int &sock) {
@@ -94,7 +101,6 @@ void Mud::acceptConnections() {
                     "|Port:" << s.remote_endpoint().port() << std::endl;
                 auto c = std::make_shared<Connection>(std::move(s));
                 c->obuf += "Greetings\n";
-                c->write();
                 this->connections.push_back(c);
             }
 
@@ -133,7 +139,7 @@ void Mud::removeClosedConnections() {
 }
 
 void Mud::removeConnection(std::shared_ptr<Connection> connection) {
-    for(auto it = connections.begin(); it != connections.end(); it++) {
+    for(auto it = connections.begin(); it != connections.end(); ++it) {
         if(connection == *it) {
             connections.erase(it);
             return;
@@ -144,7 +150,6 @@ void Mud::removeConnection(std::shared_ptr<Connection> connection) {
 void Mud::broadcast(const std::string &s) {
     for(auto c : connections) {
         c->obuf += s;
-        c->write();
     }
 }
 
