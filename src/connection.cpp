@@ -12,10 +12,10 @@
 #include <sys/types.h>
 
 Connection::Connection(asio::ip::tcp::socket s) :
-    sock(std::move(s)), ibuf(), obuf(), closed(false),
-    has_input(false)
+    sock(std::move(s)), ibuf(), obuf(), closed(false)
 {
     ibuf.resize(1024);
+    obuf.resize(1024);
     read();
 }
 
@@ -36,10 +36,6 @@ bool Connection::checkConnection() {
 
 bool Connection::pendingOutput() {
     return !obuf.empty();
-}
-
-bool Connection::pendingInput() {
-    return has_input;
 }
 
 void Connection::read() {

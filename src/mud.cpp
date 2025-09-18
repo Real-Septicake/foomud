@@ -1,4 +1,5 @@
 #include "asio/io_context.hpp"
+#include "characters/player.hpp"
 #include "connection.hpp"
 #include "repeating_timer.hpp"
 #include "utils.hpp"
@@ -20,6 +21,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <unordered_set>
+#include <structure/room.hpp>
 
 static fd_set ifds, ofds, efds;
 
@@ -31,8 +33,9 @@ void sig_handler(int) {
 Mud::Mud() :
     context(),
     acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 4000)),
-    running(true)
+    running(true), rooms()
 {
+    rooms.insert({0, std::make_shared<Room>()});
 }
 
 Mud::~Mud() {
@@ -53,7 +56,7 @@ bool Mud::run() {
 
     timer.start([this](std::error_code) {
             this->removeClosedConnections();
-            for(auto c : this->connections)
+            for(auto c : this->players)
                 this->processConnection(c);
         });
 
@@ -82,9 +85,9 @@ bool Mud::startConnection() {
     return true;
 }
 
-void Mud::processConnection(std::shared_ptr<Connection> c) {
-    if(c->pendingOutput()) {
-        c->write();
+void Mud::processConnection(std::shared_ptr<Player> p) {
+    if(p->c->pendingOutput()) {
+        p->c->write();
     }
 }
 
@@ -100,9 +103,11 @@ void Mud::acceptConnections() {
             if(!e) {
                 std::cout << "Addr:" << s.remote_endpoint().address().to_string() <<
                     "|Port:" << s.remote_endpoint().port() << std::endl;
-                auto c = std::make_shared<Connection>(std::move(s));
-                c->obuf += "Greetings\n";
-                this->connections.push_back(c);
+                auto c = std::make_unique<Connection>(std::move(s));
+                std::shared_ptr<Player> p = std::make_shared<Player>(std::move(c));
+                p->c->obuf += "Greetings\n";
+                this->players.push_back(p);
+                rooms.find(0)->second->addPlayer(p);
             }
 
             acceptConnections();
@@ -125,32 +130,33 @@ bool Mud::endConnection() {
 }
 
 void Mud::removeClosedConnections() {
-        std::unordered_set<std::shared_ptr<Connection>> remove;
-        for(auto c = connections.begin();
-                c != connections.end();
-                ++c) {
-            if((*c)->closed)
-                remove.insert(*c);
+        std::unordered_set<std::shared_ptr<Player>> remove;
+        for(auto p = players.begin();
+                p != players.end();
+                ++p) {
+            if((*p)->c->closed)
+                remove.insert(*p);
         }
-        for(auto c : remove) {
-            std::cout << "Closing [" << c->sock.remote_endpoint().address().to_string() << "]:"
-                << c->sock.remote_endpoint().port() << std::endl;
-            removeConnection(c);
+        for(auto p : remove) {
+            std::cout << "Closing [" << p->c->sock.remote_endpoint().address().to_string() << "]:"
+                << p->c->sock.remote_endpoint().port() << std::endl;
+            removeConnection(p);
+            p.reset();
         }
 }
 
-void Mud::removeConnection(std::shared_ptr<Connection> connection) {
-    for(auto it = connections.begin(); it != connections.end(); ++it) {
+void Mud::removeConnection(std::shared_ptr<Player> connection) {
+    for(auto it = players.begin(); it != players.end(); ++it) {
         if(connection == *it) {
-            connections.erase(it);
+            players.erase(it);
             return;
         }
     }
 }
 
 void Mud::broadcast(const std::string &s) {
-    for(auto c : connections) {
-        c->obuf += s;
+    for(auto p : players) {
+        p->c->obuf += s;
     }
 }
 

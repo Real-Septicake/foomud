@@ -2,6 +2,9 @@
 #define MUD_HPP
 
 #include "asio/io_context.hpp"
+#include "characters/player.hpp"
+#include "structure/room.hpp"
+#include <map>
 #include <memory>
 #include <vector>
 #include <connection.hpp>
@@ -14,18 +17,19 @@ class Mud {
         long port;
         bool running;
         int max_sock;
-        std::vector<std::shared_ptr<Connection>> connections;
+        std::vector<std::shared_ptr<Player>> players;
         Mud();
         ~Mud();
         bool startConnection();
         void acceptConnections();
-        void processConnection(std::shared_ptr<Connection>);
+        void processConnection(std::shared_ptr<Player>);
         bool checkConnection(const int &);
         bool closeConnection(const int &);
         bool endConnection();
         void removeClosedConnections();
-        void removeConnection(std::shared_ptr<Connection>);
+        void removeConnection(std::shared_ptr<Player>);
         void broadcast(const std::string &);
+        std::map<unsigned int, std::shared_ptr<Room>> rooms;
     public:
         bool run();
         void handleInput(std::string &);
