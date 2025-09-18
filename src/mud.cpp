@@ -106,8 +106,10 @@ void Mud::acceptConnections() {
                 auto c = std::make_unique<Connection>(std::move(s));
                 std::shared_ptr<Player> p = std::make_shared<Player>(std::move(c));
                 p->c->obuf += "Greetings\n";
-                this->players.push_back(p);
-                rooms.find(0)->second->addPlayer(p);
+                players.push_back(p);
+                auto r = rooms.find(0);
+                if(r != rooms.end())
+                    r->second->addPlayer(p);
             }
 
             acceptConnections();

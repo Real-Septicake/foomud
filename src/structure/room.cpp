@@ -1,4 +1,5 @@
 #include "characters/player.hpp"
+#include <iostream>
 #include <memory>
 #include <structure/room.hpp>
 
@@ -7,10 +8,14 @@ Room::Room() :
 {
 }
 
+Room::~Room() {
+    std::cout << "deleted" << std::endl;
+}
+
 bool Room::addPlayer(std::shared_ptr<Player> &p) {
     if(players.contains(p))
         return false;
-    p->current_room = std::move(shared_from_this());
+    p->current_room = shared_from_this();
     return players.insert(p).second;
 }
 
