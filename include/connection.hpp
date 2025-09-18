@@ -13,6 +13,7 @@ class Connection {
         ~Connection();
         Connection(asio::ip::tcp::socket);
         bool pendingOutput();
+        bool pendingInput();
         bool checkConnection();
         void read();
         void write();

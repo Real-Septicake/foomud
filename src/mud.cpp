@@ -82,6 +82,10 @@ bool Mud::startConnection() {
 }
 
 void Mud::processConnection(std::shared_ptr<Connection> c) {
+    if(c->pendingInput()) {
+        std::cout << c->ibuf.length() << std::endl;
+        c->ibuf.clear();
+    }
     if(c->pendingOutput()) {
         c->write();
     }
