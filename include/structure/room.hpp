@@ -6,7 +6,7 @@
 
 class Player;
 
-class Room : std::enable_shared_from_this<Room> {
+class Room : public std::enable_shared_from_this<Room> {
     private:
         std::set<std::shared_ptr<Player>> players;
     public:
