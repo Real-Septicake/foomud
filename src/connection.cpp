@@ -3,6 +3,7 @@
 #include "asio/error.hpp"
 #include "asio/ip/tcp.hpp"
 #include "asio/write.hpp"
+#include "mud.hpp"
 #include <connection.hpp>
 #include <iostream>
 #include <ostream>
@@ -48,7 +49,8 @@ void Connection::read() {
             [this](std::error_code e, std::size_t length) {
                 if(!e) {
                     std::cout << length << std::endl;
-                    has_input = true;
+                    Mud::instance().handleInput(ibuf);
+                    ibuf.clear();
                 } else if(e == asio::error::eof) {
                     this->closed = true;
                     return;

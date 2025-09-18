@@ -82,16 +82,6 @@ bool Mud::startConnection() {
 }
 
 void Mud::processConnection(std::shared_ptr<Connection> c) {
-    if(c->pendingInput()) {
-        for(auto ch : c->ibuf) {
-            if(ch == 0)
-                continue;
-            std::cout << ch;
-        }
-        std::cout << std::endl;
-        c->ibuf.clear();
-        c->has_input = false;
-    }
     if(c->pendingOutput()) {
         c->write();
     }
@@ -161,6 +151,10 @@ void Mud::broadcast(const std::string &s) {
     for(auto c : connections) {
         c->obuf += s;
     }
+}
+
+void Mud::handleInput(std::string &s) {
+    broadcast(s);
 }
 
 Mud& Mud::instance() {

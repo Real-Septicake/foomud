@@ -17,9 +17,6 @@ class Mud {
         std::vector<std::shared_ptr<Connection>> connections;
         Mud();
         ~Mud();
-    public:
-        bool run();
-        void shutdown();
         bool startConnection();
         void acceptConnections();
         void processConnection(std::shared_ptr<Connection>);
@@ -29,6 +26,10 @@ class Mud {
         void removeClosedConnections();
         void removeConnection(std::shared_ptr<Connection>);
         void broadcast(const std::string &);
+    public:
+        bool run();
+        void handleInput(std::string &);
+        void shutdown();
         static Mud& instance();
 };
 
