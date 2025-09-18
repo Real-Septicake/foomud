@@ -1,5 +1,9 @@
+#include <cstddef>
+#include <iterator>
+#include <sstream>
 #include <string>
 #include <utils.hpp>
+#include <vector>
 
 void findReplace(std::string &source, const std::string &find, const std::string &replace) {
     if(source.empty())
@@ -13,4 +17,19 @@ void findReplace(std::string &source, const std::string &find, const std::string
         source.replace(pos, find.length(), replace);
         pos = source.find(find);
     }
+}
+
+std::string trim(std::string &source, const std::string &remove) {
+    std::string s = source;
+    auto f = s.find_first_not_of(remove);
+    auto l = s.find_last_not_of(remove);
+    s.erase(l+1).erase(0, f);
+    return s;
+}
+
+std::vector<std::string> words(std::string &s) {
+    std::istringstream iss(s);
+    std::istream_iterator<std::string> b(iss);
+    std::istream_iterator<std::string> e;
+    return std::vector<std::string>(b, e);
 }

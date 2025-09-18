@@ -48,7 +48,6 @@ void Connection::read() {
             asio::transfer_at_least(1),
             [this](std::error_code e, std::size_t length) {
                 if(!e) {
-                    std::cout << length << std::endl;
                     Mud::instance().handleInput(ibuf);
                     ibuf.clear();
                 } else if(e == asio::error::eof) {

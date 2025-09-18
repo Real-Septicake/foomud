@@ -1,6 +1,7 @@
 #include "asio/io_context.hpp"
 #include "connection.hpp"
 #include "repeating_timer.hpp"
+#include "utils.hpp"
 #include <asm-generic/socket.h>
 #include <cerrno>
 #include <chrono>
@@ -154,7 +155,12 @@ void Mud::broadcast(const std::string &s) {
 }
 
 void Mud::handleInput(std::string &s) {
-    broadcast(s);
+    std::string trimmed = trim(s);
+    std::vector<std::string> working = words(trimmed);
+    for(auto w : working) {
+        std::cout << w << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 Mud& Mud::instance() {
