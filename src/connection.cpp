@@ -14,8 +14,6 @@
 Connection::Connection(asio::ip::tcp::socket s) :
     sock(std::move(s)), ibuf(), obuf(), closed(false)
 {
-    ibuf.resize(1024);
-    obuf.resize(1024);
     read();
 }
 

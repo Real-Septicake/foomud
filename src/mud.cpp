@@ -163,12 +163,20 @@ void Mud::broadcast(const std::string &s) {
 }
 
 void Mud::handleInput(std::string &s) {
-    std::string trimmed = trim(s);
-    std::vector<std::string> working = words(trimmed);
-    for(auto w : working) {
-        std::cout << w << std::endl;
+    if(s[0] == (char)255) {
+        std::cout << "negotiations:" << std::endl;
+        for(auto c : s) {
+            std::cout << (int) (unsigned char) c << " ";
+        }
+        std::cout << std::endl;
+    } else {
+        std::string trimmed = trim(s);
+        std::vector<std::string> working = words(trimmed);
+        for(auto w : working) {
+            std::cout << w << std::endl;
+        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
 }
 
 Mud& Mud::instance() {
