@@ -1,4 +1,5 @@
 #include "asio/io_context.hpp"
+#include "asio/placeholders.hpp"
 #include "characters/player.hpp"
 #include "connection.hpp"
 #include "repeating_timer.hpp"
@@ -91,12 +92,6 @@ void Mud::processConnection(std::shared_ptr<Player> p) {
     }
 }
 
-bool Mud::checkConnection(const int &sock) {
-    int err_code;
-    socklen_t err_code_sz = sizeof(err_code);
-    return getsockopt(sock, SOL_SOCKET, SO_ERROR, &err_code, &err_code_sz) == 0;
-}
-
 void Mud::acceptConnections() {
     acceptor.async_accept(
         [this](std::error_code e, asio::ip::tcp::socket s) {
@@ -104,8 +99,9 @@ void Mud::acceptConnections() {
                 std::cout << "Addr:" << s.remote_endpoint().address().to_string() <<
                     "|Port:" << s.remote_endpoint().port() << std::endl;
                 auto c = std::make_unique<Connection>(std::move(s));
-                std::shared_ptr<Player> p = std::make_shared<Player>(std::move(c));
-                p->c->obuf += "Greetings\n";
+                std::shared_ptr<Player> p = std::make_shared<Player>();
+                p->init(std::move(c));
+                p->sendMsg("Greetings\n");
                 players.push_back(p);
                 auto r = rooms.find(0);
                 if(r != rooms.end())
@@ -117,8 +113,9 @@ void Mud::acceptConnections() {
      return;
 }
 
-bool Mud::closeConnection(const int &sock) {
-    return close(sock) == 0;
+void Mud::closeConnection(std::shared_ptr<Player> p) {
+    try { p->c->sock.close(); }
+    catch (...) {}
 }
 
 bool Mud::endConnection() {
@@ -140,8 +137,12 @@ void Mud::removeClosedConnections() {
                 remove.insert(*p);
         }
         for(auto p : remove) {
+            try {
             std::cout << "Closing [" << p->c->sock.remote_endpoint().address().to_string() << "]:"
                 << p->c->sock.remote_endpoint().port() << std::endl;
+            } catch(...) {
+                std::cout << "unknown]" << std::endl;
+            }
             removeConnection(p);
             p.reset();
         }
@@ -150,6 +151,8 @@ void Mud::removeClosedConnections() {
 void Mud::removeConnection(std::shared_ptr<Player> connection) {
     for(auto it = players.begin(); it != players.end(); ++it) {
         if(connection == *it) {
+            std::error_code e;
+            connection->current_room->remPlayer(connection);
             players.erase(it);
             return;
         }
@@ -162,7 +165,7 @@ void Mud::broadcast(const std::string &s) {
     }
 }
 
-void Mud::handleInput(std::string &s) {
+void Mud::handleInput(std::string &s, std::shared_ptr<Player> p) {
     if(s[0] == (char)255) {
         std::cout << "negotiations:" << std::endl;
         for(auto c : s) {
@@ -175,7 +178,7 @@ void Mud::handleInput(std::string &s) {
         for(auto w : working) {
             std::cout << w << std::endl;
         }
-        std::cout << std::endl;
+        p->current_room->send(trimmed + "\r\n", {p});
     }
 }
 

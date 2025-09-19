@@ -3,9 +3,15 @@
 #include <iostream>
 #include <memory>
 
-Player::Player(std::unique_ptr<Connection> c) :
-    c(std::move(c))
-{
+void Player::sendMsg(std::string msg) {
+    c->obuf += msg;
+}
+
+void Player::init(std::unique_ptr<Connection> connection) {
+    if(c.get())
+        return;
+    c = std::move(connection);
+    c->parent = weak_from_this();
 }
 
 Player::~Player() {

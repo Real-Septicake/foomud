@@ -1,12 +1,16 @@
 #ifndef CONNECTION_HPP
 #define CONNECTION_HPP
 
+#include <memory>
 #include <string>
 #include <asio.hpp>
+
+class Player;
 
 class Connection {
     private:
         std::string ibuf;
+        std::weak_ptr<Player> parent;
     public:
         std::string obuf;
         asio::ip::tcp::socket sock;
@@ -17,6 +21,8 @@ class Connection {
         bool checkConnection();
         void read();
         void write();
+
+    friend Player;
 };
 
 

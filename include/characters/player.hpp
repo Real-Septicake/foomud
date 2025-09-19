@@ -6,11 +6,12 @@
 
 class Room;
 
-class Player {
+class Player : public std::enable_shared_from_this<Player> {
     public:
         std::unique_ptr<Connection> c;
         std::shared_ptr<Room> current_room;
-        Player(std::unique_ptr<Connection>);
+        void init(std::unique_ptr<Connection>);
+        void sendMsg(std::string);
         ~Player();
 };
 

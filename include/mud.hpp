@@ -23,8 +23,6 @@ class Mud {
         bool startConnection();
         void acceptConnections();
         void processConnection(std::shared_ptr<Player>);
-        bool checkConnection(const int &);
-        bool closeConnection(const int &);
         bool endConnection();
         void removeClosedConnections();
         void removeConnection(std::shared_ptr<Player>);
@@ -32,7 +30,8 @@ class Mud {
         std::map<unsigned int, std::shared_ptr<Room>> rooms;
     public:
         bool run();
-        void handleInput(std::string &);
+        void handleInput(std::string &, std::shared_ptr<Player>);
+        void closeConnection(std::shared_ptr<Player>);
         void shutdown();
         static Mud& instance();
 };
