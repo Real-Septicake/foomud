@@ -4,8 +4,10 @@
 #include "asio/io_context.hpp"
 #include "characters/player.hpp"
 #include "structure/room.hpp"
+#include <command/command.hpp>
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 #include <connection.hpp>
 #include <asio/ip/tcp.hpp>
@@ -28,6 +30,7 @@ class Mud {
         void removeConnection(std::shared_ptr<Player>);
         void broadcast(const std::string &);
         std::map<unsigned int, std::shared_ptr<Room>> rooms;
+        std::map<std::string, std::shared_ptr<Command>> commands;
     public:
         bool run();
         void handleInput(std::string &, std::shared_ptr<Player>);
