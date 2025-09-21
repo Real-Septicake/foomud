@@ -2,7 +2,7 @@
 #include <iostream>
 #include <structure/room.hpp>
 
-void Character::sendMsg(std::string msg) {
+void Character::sendMsg(std::string /*msg*/) {
 }
 
 Character::~Character() {

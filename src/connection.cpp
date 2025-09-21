@@ -12,7 +12,7 @@
 #include <sys/types.h>
 
 Connection::Connection(asio::ip::tcp::socket s) :
-    sock(std::move(s)), ibuf(), obuf(), closed(false)
+    ibuf(), obuf(), sock(std::move(s)), closed(false)
 {
     read();
 }
@@ -40,7 +40,7 @@ void Connection::read() {
     asio::async_read(sock,
             asio::dynamic_buffer(ibuf),
             asio::transfer_at_least(1),
-            [this](std::error_code e, std::size_t length) {
+            [this](std::error_code e, std::size_t /*length*/) {
                 if(!e) {
                     Mud::instance().handleInput(ibuf, parent.lock());
                     ibuf.clear();
@@ -61,7 +61,7 @@ void Connection::read() {
 void Connection::write() {
     asio::async_write(sock, 
             asio::buffer(obuf),
-            [this](std::error_code e, std::size_t length) {
+            [this](std::error_code e, std::size_t /*length*/) {
                 if(e) {
                     perror("write");
                 }

@@ -23,8 +23,6 @@
 #include <unordered_set>
 #include <structure/room.hpp>
 
-static fd_set ifds, ofds, efds;
-
 void sig_handler(int) {
     std::cout << std::endl << "signal recieved" << std::endl;
     Mud::instance().shutdown();
