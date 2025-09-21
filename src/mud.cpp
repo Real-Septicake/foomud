@@ -150,7 +150,6 @@ void Mud::removeClosedConnections() {
 void Mud::removeConnection(std::shared_ptr<Player> connection) {
     for(auto it = players.begin(); it != players.end(); ++it) {
         if(connection == *it) {
-            std::error_code e;
             connection->current_room->remCharacter(connection->shared_from_this());
             players.erase(it);
             return;

@@ -10,6 +10,7 @@ class Character : public enable_shared_from_base<Character>{
     public:
         std::shared_ptr<Room> current_room;
         void sendMsg(std::string);
+        ~Character();
 };
 
 #endif

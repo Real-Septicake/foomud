@@ -6,7 +6,7 @@
 #include <structure/room.hpp>
 
 Room::Room() :
-    characters()
+    characters({})
 {
 }
 

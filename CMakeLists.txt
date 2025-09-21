@@ -8,6 +8,9 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fstack-protector-strong")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector-strong")
+
 include(FetchContent)
 
 FetchContent_Declare(enchantum
