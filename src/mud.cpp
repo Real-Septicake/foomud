@@ -176,7 +176,10 @@ void Mud::handleInput(std::string &s, std::shared_ptr<Player> p) {
         for(auto w : working) {
             std::cout << w << std::endl;
         }
-        p->current_room->send(trimmed + "\r\n", {p});
+        if(p->current_room.use_count() > 0)
+            p->current_room->send(trimmed + "\r\n", {p});
+        else
+            std::cout << "room's null" << std::endl;
     }
 }
 
