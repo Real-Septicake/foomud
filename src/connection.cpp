@@ -42,7 +42,7 @@ void Connection::read() {
             asio::transfer_at_least(1),
             [this](std::error_code e, std::size_t length) {
                 if(!e) {
-                    Mud::instance().handleInput(ibuf, parent.lock()->shared_from_this());
+                    Mud::instance().handleInput(ibuf, parent.lock());
                     ibuf.clear();
                 } else if(e == asio::error::eof) {
                     this->closed = true;
@@ -50,7 +50,7 @@ void Connection::read() {
                 } else {
                     this->closed = true;
                     perror("read");
-                    Mud::instance().closeConnection(parent.lock()->shared_from_this());
+                    Mud::instance().closeConnection(parent.lock());
                     return;
                 }
                 read();

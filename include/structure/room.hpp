@@ -5,17 +5,18 @@
 #include <set>
 #include <string>
 
-class Player;
+
+class Character;
 
 class Room : public std::enable_shared_from_this<Room> {
     private:
-        std::set<std::shared_ptr<Player>> players;
+        std::set<std::shared_ptr<Character>> characters;
     public:
         Room();
         ~Room();
-        bool addPlayer(std::shared_ptr<Player> &);
-        bool remPlayer(std::shared_ptr<Player> &);
-        void send(std::string, std::set<std::shared_ptr<Player>>);
+        bool addCharacter(std::shared_ptr<Character>);
+        bool remCharacter(std::shared_ptr<Character>);
+        void send(std::string, std::set<std::shared_ptr<Character>>);
 };
 
 #endif

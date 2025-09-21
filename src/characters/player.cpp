@@ -11,7 +11,7 @@ void Player::init(std::unique_ptr<Connection> connection) {
     if(c.get())
         return;
     c = std::move(connection);
-    c->parent = weak_from_this();
+    c->parent = shared_from_base<Player>();
 }
 
 Player::~Player() {

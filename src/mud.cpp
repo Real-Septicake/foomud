@@ -1,5 +1,4 @@
 #include "asio/io_context.hpp"
-#include "asio/placeholders.hpp"
 #include "characters/player.hpp"
 #include "connection.hpp"
 #include "repeating_timer.hpp"
@@ -105,7 +104,7 @@ void Mud::acceptConnections() {
                 players.push_back(p);
                 auto r = rooms.find(0);
                 if(r != rooms.end())
-                    r->second->addPlayer(p);
+                    r->second->addCharacter(p);
             }
 
             acceptConnections();
@@ -152,7 +151,7 @@ void Mud::removeConnection(std::shared_ptr<Player> connection) {
     for(auto it = players.begin(); it != players.end(); ++it) {
         if(connection == *it) {
             std::error_code e;
-            connection->current_room->remPlayer(connection);
+            connection->current_room->remCharacter(connection->shared_from_this());
             players.erase(it);
             return;
         }

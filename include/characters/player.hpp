@@ -3,10 +3,12 @@
 
 #include "connection.hpp"
 #include <memory>
+#include <characters/character.hpp>
 
 class Room;
 
-class Player : public std::enable_shared_from_this<Player> {
+
+class Player : public Character {
     public:
         std::unique_ptr<Connection> c;
         std::shared_ptr<Room> current_room;

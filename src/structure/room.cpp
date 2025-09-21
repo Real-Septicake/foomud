@@ -1,3 +1,4 @@
+#include "characters/character.hpp"
 #include "characters/player.hpp"
 #include <iostream>
 #include <memory>
@@ -5,7 +6,7 @@
 #include <structure/room.hpp>
 
 Room::Room() :
-    players()
+    characters()
 {
 }
 
@@ -13,22 +14,22 @@ Room::~Room() {
     std::cout << "deleted" << std::endl;
 }
 
-bool Room::addPlayer(std::shared_ptr<Player> &p) {
-    if(players.contains(p))
+bool Room::addCharacter(std::shared_ptr<Character> p) {
+    if(characters.contains(p))
         return false;
     p->current_room = shared_from_this();
-    return players.insert(p).second;
+    return characters.insert(p).second;
 }
 
-bool Room::remPlayer(std::shared_ptr<Player> &p) {
-    if(!players.contains(p))
+bool Room::remCharacter(std::shared_ptr<Character> p) {
+    if(!characters.contains(p))
         return false;
     p->current_room.reset();
-    return players.erase(p) != 0;
+    return characters.erase(p) != 0;
 }
 
-void Room::send(std::string msg, std::set<std::shared_ptr<Player>> exclude) {
-    for(auto &p : players) {
+void Room::send(std::string msg, std::set<std::shared_ptr<Character>> exclude) {
+    for(auto p : characters) {
         if(exclude.contains(p))
             continue;
         p->sendMsg(msg);
