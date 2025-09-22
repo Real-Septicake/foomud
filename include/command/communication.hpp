@@ -1,7 +1,7 @@
 #include "characters/character.hpp"
+#include "input/arguments.hpp"
 #include <memory>
-#include <string>
-#include <vector>
+
 void loadCommsCommands();
 
-bool say(std::shared_ptr<Character>, std::vector<std::string> &);
+bool say(std::shared_ptr<Character>, Arguments &);

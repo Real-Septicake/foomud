@@ -1,3 +1,4 @@
+#include "input/arguments.hpp"
 #include <command/command.hpp>
 #include <command/communication.hpp>
 
@@ -10,6 +11,6 @@ Command::Command(std::string name, std::string desc, std::string args, func call
 {
 }
 
-bool Command::operator()(std::shared_ptr<Character> character, std::vector<std::string> &args) {
+bool Command::operator()(std::shared_ptr<Character> character, Arguments &args) {
     return callback(character, args);
 }

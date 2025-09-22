@@ -176,14 +176,13 @@ void Mud::handleInput(std::string &s, std::shared_ptr<Player> p) {
         }
         std::cout << std::endl;
     } else {
-        std::string trimmed = trim(s);
-        std::vector<std::string> working = words(trimmed);
-        for(auto w : working) {
-            std::cout << w << std::endl;
+        Arguments args(s);
+        std::string str = args[0];
+        auto command = commands.find(str);
+        if(command != commands.end()) {
+            args.erase(0);
+            (*command).second->callback(p->shared_from_this(), args);
         }
-        auto command = commands.find(trim(working[0]));
-        if(command != commands.end())
-            (*command).second->callback(p->shared_from_this(), working);
 //         if(p->current_room.use_count() > 0)
 //             p->current_room->send(trimmed + "\r\n", {p});
 //         else
