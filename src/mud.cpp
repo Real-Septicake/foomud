@@ -1,5 +1,6 @@
 #include "asio/io_context.hpp"
 #include "characters/player.hpp"
+#include "command/command.hpp"
 #include "connection.hpp"
 #include "repeating_timer.hpp"
 #include "utils.hpp"
@@ -39,6 +40,10 @@ Mud::Mud() :
 Mud::~Mud() {
 }
 
+bool Mud::addCommand(std::shared_ptr<Command> c) {
+    return commands.insert({c->name, c}).second;
+}
+
 bool Mud::run() {
     signal(SIGTERM, sig_handler);
     signal(SIGINT, sig_handler);
@@ -47,6 +52,8 @@ bool Mud::run() {
         std::cerr << "Error starting server socket" << std::endl;
         return false;
     }
+
+    loadCommands();
 
     std::cout << "starting loop" << std::endl;
 
@@ -174,10 +181,13 @@ void Mud::handleInput(std::string &s, std::shared_ptr<Player> p) {
         for(auto w : working) {
             std::cout << w << std::endl;
         }
-        if(p->current_room.use_count() > 0)
-            p->current_room->send(trimmed + "\r\n", {p});
-        else
-            std::cout << "room's null" << std::endl;
+        auto command = commands.find(trim(working[0]));
+        if(command != commands.end())
+            (*command).second->callback(p->shared_from_this(), working);
+//         if(p->current_room.use_count() > 0)
+//             p->current_room->send(trimmed + "\r\n", {p});
+//         else
+//             std::cout << "room's null" << std::endl;
     }
 }
 

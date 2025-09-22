@@ -35,6 +35,7 @@ class Mud {
         bool run();
         void handleInput(std::string &, std::shared_ptr<Player>);
         void closeConnection(std::shared_ptr<Player>);
+        bool addCommand(std::shared_ptr<Command>);
         void shutdown();
         static Mud& instance();
 };
