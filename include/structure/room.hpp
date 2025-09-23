@@ -16,6 +16,7 @@ class Room : public std::enable_shared_from_this<Room> {
         ~Room();
         bool addCharacter(std::shared_ptr<Character>);
         bool remCharacter(std::shared_ptr<Character>);
+        std::shared_ptr<Character> findCharacter(std::string);
         void send(std::string, std::set<std::shared_ptr<Character>>);
 };
 

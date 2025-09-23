@@ -5,3 +5,5 @@
 void loadCommsCommands();
 
 bool say(std::shared_ptr<Character>, Arguments &);
+
+bool tell(std::shared_ptr<Character>, Arguments &);

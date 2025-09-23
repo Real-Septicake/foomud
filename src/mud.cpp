@@ -5,7 +5,6 @@
 #include "input/handlers/handler.hpp"
 #include "input/handlers/name.hpp"
 #include "repeating_timer.hpp"
-#include "utils.hpp"
 #include <asm-generic/socket.h>
 #include <cerrno>
 #include <chrono>
@@ -108,7 +107,7 @@ void Mud::acceptConnections() {
                 std::shared_ptr<Player> p = std::make_shared<Player>();
                 p->init(std::move(c));
                 p->handler = std::static_pointer_cast<Handler>(std::make_shared<NameHandler>());
-                p->sendMsg("Greetings\n");
+                p->sendMsg("Greetings\r\nName: ");
                 players.push_back(p);
                 auto r = rooms.find(0);
                 if(r != rooms.end())
@@ -169,9 +168,6 @@ void Mud::broadcast(const std::string &s) {
     for(auto p : players) {
         p->c->obuf += s;
     }
-}
-
-void Mud::handleInput(std::string &s, std::shared_ptr<Player> p) {
 }
 
 Mud& Mud::instance() {

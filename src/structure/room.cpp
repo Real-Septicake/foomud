@@ -35,3 +35,11 @@ void Room::send(std::string msg, std::set<std::shared_ptr<Character>> exclude) {
         p->sendMsg(msg);
     }
 }
+
+std::shared_ptr<Character> Room::findCharacter(std::string name) {
+    for(auto c : characters) {
+        if(c->name == name)
+            return c;
+    }
+    return nullptr;
+}

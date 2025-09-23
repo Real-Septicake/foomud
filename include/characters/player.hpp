@@ -16,7 +16,6 @@ class Player : public Character {
         std::unique_ptr<Connection> c;
         void init(std::unique_ptr<Connection>);
         void sendMsg(std::string) override;
-        ~Player();
 };
 
 #endif
