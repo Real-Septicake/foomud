@@ -54,7 +54,8 @@ bool say(std::shared_ptr<Character> c, Arguments &args) {
                 a.pop_back();
                 quoted = false;
             }
-            adverb += " " + a;
+            if(!a.empty())
+                adverb += " " + a;
         }
     }
 
