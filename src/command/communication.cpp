@@ -84,13 +84,12 @@ bool tell(std::shared_ptr<Character> c, Arguments &args) {
     std::string name = args[0];
     auto p = parseCharacter(name, c);
     if(p == nullptr) {
-        c->sendMsg("There is nobody by the name of \"" + name.substr(1) + "\"\r\n");
+        c->sendMsg("There is nobody nearby with the name \"" + name.substr(1) + "\"\r\n");
         return false;
     }
     args.erase(0);
     std::string message = createMessage(args);
     c->sendMsg("You tell " + name.substr(1) + " " + message);
     p->sendMsg(c->name + " tells you " + message);
-    c->current_room->send(c->name + " tells " + name.substr(1) + " " + message, {c, p});
     return true;
 }
