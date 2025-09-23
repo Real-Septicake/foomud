@@ -42,7 +42,7 @@ void Connection::read() {
             asio::transfer_at_least(1),
             [this](std::error_code e, std::size_t /*length*/) {
                 if(!e) {
-                    Mud::instance().handleInput(ibuf, parent.lock());
+                    parent.lock()->handler->process(parent.lock(), ibuf);
                     ibuf.clear();
                 } else if(e == asio::error::eof) {
                     this->closed = true;

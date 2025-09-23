@@ -2,6 +2,8 @@
 #include "characters/player.hpp"
 #include "command/command.hpp"
 #include "connection.hpp"
+#include "input/handlers/handler.hpp"
+#include "input/handlers/name.hpp"
 #include "repeating_timer.hpp"
 #include "utils.hpp"
 #include <asm-generic/socket.h>
@@ -105,6 +107,7 @@ void Mud::acceptConnections() {
                 auto c = std::make_unique<Connection>(std::move(s));
                 std::shared_ptr<Player> p = std::make_shared<Player>();
                 p->init(std::move(c));
+                p->handler = std::static_pointer_cast<Handler>(std::make_shared<NameHandler>());
                 p->sendMsg("Greetings\n");
                 players.push_back(p);
                 auto r = rooms.find(0);
@@ -169,25 +172,6 @@ void Mud::broadcast(const std::string &s) {
 }
 
 void Mud::handleInput(std::string &s, std::shared_ptr<Player> p) {
-    if(s[0] == (char)255) {
-        std::cout << "negotiations:" << std::endl;
-        for(auto c : s) {
-            std::cout << (int) (unsigned char) c << " ";
-        }
-        std::cout << std::endl;
-    } else {
-        Arguments args(s);
-        std::string str = args[0];
-        auto command = commands.find(str);
-        if(command != commands.end()) {
-            args.erase(0);
-            (*command).second->callback(p->shared_from_this(), args);
-        }
-//         if(p->current_room.use_count() > 0)
-//             p->current_room->send(trimmed + "\r\n", {p});
-//         else
-//             std::cout << "room's null" << std::endl;
-    }
 }
 
 Mud& Mud::instance() {

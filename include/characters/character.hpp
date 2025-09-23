@@ -8,6 +8,7 @@ class Room;
 
 class Character : public enable_shared_from_base<Character>{
     public:
+        std::string name;
         std::shared_ptr<Room> current_room;
         virtual void sendMsg(std::string);
         ~Character();

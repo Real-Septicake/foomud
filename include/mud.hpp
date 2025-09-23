@@ -29,8 +29,6 @@ class Mud {
         void removeClosedConnections();
         void removeConnection(std::shared_ptr<Player>);
         void broadcast(const std::string &);
-        std::map<unsigned int, std::shared_ptr<Room>> rooms;
-        std::map<std::string, std::shared_ptr<Command>> commands;
     public:
         bool run();
         void handleInput(std::string &, std::shared_ptr<Player>);
@@ -38,6 +36,8 @@ class Mud {
         bool addCommand(std::shared_ptr<Command>);
         void shutdown();
         static Mud& instance();
+        std::map<unsigned int, std::shared_ptr<Room>> rooms;
+        std::map<std::string, std::shared_ptr<Command>> commands;
 };
 
 #endif

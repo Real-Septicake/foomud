@@ -13,6 +13,6 @@ bool say(std::shared_ptr<Character> c, Arguments &args) {
     message += args.substr(0);
     message += "\"\r\n";
     c->sendMsg("You say " + message);
-    c->current_room->send("They say " + message, {c});
+    c->current_room->send(c->name + " says " + message, {c});
     return true;
 }
