@@ -17,8 +17,10 @@ FetchContent_Declare(enchantum
     GIT_REPOSITORY "https://github.com/ZXShady/enchantum"
     GIT_TAG main
 )
-
 FetchContent_MakeAvailable(enchantum)
+
+FetchContent_Declare(lexy URL https://lexy.foonathan.net/download/lexy-src.zip)
+FetchContent_MakeAvailable(lexy)
 
 file(GLOB_RECURSE SRC
     ./src/*.cpp
@@ -32,3 +34,5 @@ target_include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${enchantum_SOURCE_DIR}/enchantum/include
 )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE foonathan::lexy foonathan::lexy::ext)

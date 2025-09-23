@@ -1,6 +1,7 @@
 #include "characters/character.hpp"
 #include "input/arguments.hpp"
 #include "mud.hpp"
+#include "parsers/parsers.hpp"
 #include <command/communication.hpp>
 #include <memory>
 
@@ -17,7 +18,16 @@ std::string createMessage(Arguments &args) {
 }
 
 bool say(std::shared_ptr<Character> c, Arguments &args) {
+    std::shared_ptr<Character> recipient = parseCharacter(args[0], c);
+    if(recipient)
+        args.erase(0);
     std::string message = createMessage(args);
+    if(recipient) {
+        c->sendMsg("You say to " + recipient->name + ", " + message);
+        recipient->sendMsg(c->name + " says to you, " + message);
+        c->current_room->send(c->name + " says to " + recipient->name + ", " + message, {c, recipient});
+        return true;
+    }
     c->sendMsg("You say " + message);
     c->current_room->send(c->name + " says " + message, {c});
     return true;
@@ -25,19 +35,19 @@ bool say(std::shared_ptr<Character> c, Arguments &args) {
 
 bool tell(std::shared_ptr<Character> c, Arguments &args) {
     if(args.size() < 2) {
-        c->sendMsg("Incorrect usage: tell <character> <message>");
+        c->sendMsg("Incorrect usage: tell @<character> <message>\r\n");
         return false;
     }
     std::string name = args[0];
-    std::shared_ptr<Character> p = c->current_room->findCharacter(name);
+    auto p = parseCharacter(name, c);
     if(p == nullptr) {
-        c->sendMsg("There is nobody by the name of " + name);
+        c->sendMsg("There is nobody by the name of " + name.substr(1) + "\r\n");
         return false;
     }
     args.erase(0);
     std::string message = createMessage(args);
-    c->sendMsg("You tell " + name + " " + message);
+    c->sendMsg("You tell " + name.substr(1) + " " + message);
     p->sendMsg(c->name + " tells you " + message);
-    c->current_room->send(c->name + " tells " + name + " " + message, {c, p});
+    c->current_room->send(c->name + " tells " + name.substr(1) + " " + message, {c, p});
     return true;
 }
