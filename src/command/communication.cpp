@@ -3,6 +3,7 @@
 #include "mud.hpp"
 #include "parsers/parsers.hpp"
 #include <command/communication.hpp>
+#include <iostream>
 #include <memory>
 
 void loadCommsCommands() {
@@ -47,7 +48,8 @@ bool say(std::shared_ptr<Character> c, Arguments &args) {
         }
         adverb += v;
         while(quoted) {
-            std::string a = args.erase(0);
+            std::string a = args[0];
+            args.erase(0);
             if(a.back() == '\'') {
                 a.pop_back();
                 quoted = false;
