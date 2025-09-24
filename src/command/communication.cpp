@@ -5,9 +5,9 @@
 #include <command/communication.hpp>
 #include <memory>
 
-void loadCommsCommands() {
-    Mud::instance().addCommand(std::make_shared<Command>("say", "<message>", "say something", say));
-    Mud::instance().addCommand(std::make_shared<Command>("tell", "<character> <message>", "tell someone something", tell));
+void commands::loadCommsCommands() {
+    Mud::instance().addCommand(std::make_shared<Command>("say", "[@<character>] [>'<adverdb>'] <message>", "say something", commands::say));
+    Mud::instance().addCommand(std::make_shared<Command>("tell", "<character> <message>", "tell someone something", commands::tell));
 }
 
 std::string createMessage(Arguments &args) {
@@ -17,7 +17,7 @@ std::string createMessage(Arguments &args) {
     return message;
 }
 
-bool say(std::shared_ptr<Character> c, Arguments &args) {
+bool commands::say(std::shared_ptr<Character> c, Arguments &args) {
     if(args.size() == 0) {
         c->sendMsg("Say what?\r\n");
         return false;
@@ -79,7 +79,7 @@ bool say(std::shared_ptr<Character> c, Arguments &args) {
     return true;
 }
 
-bool tell(std::shared_ptr<Character> c, Arguments &args) {
+bool commands::tell(std::shared_ptr<Character> c, Arguments &args) {
     if(args.size() < 2) {
         c->sendMsg("Incorrect usage: tell @<character> <message>\r\n");
         return false;

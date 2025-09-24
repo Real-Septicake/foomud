@@ -5,8 +5,8 @@
 #include <set>
 #include <structure/room.hpp>
 
-Room::Room() :
-    characters({})
+Room::Room(std::size_t vnum) :
+    characters(), vnum(vnum)
 {
 }
 
@@ -26,6 +26,15 @@ bool Room::remCharacter(std::shared_ptr<Character> p) {
         return false;
     p->current_room.reset();
     return characters.erase(p) != 0;
+}
+
+std::vector<std::shared_ptr<Character>> Room::getCharacters(std::set<std::shared_ptr<Character>> exclude) {
+    std::vector<std::shared_ptr<Character>> result;
+    for(auto c : characters) {
+        if(!exclude.contains(c))
+            result.push_back(c);
+    }
+    return result;
 }
 
 void Room::send(std::string msg, std::set<std::shared_ptr<Character>> exclude) {

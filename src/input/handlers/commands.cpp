@@ -16,9 +16,10 @@ bool CommandHandler::process(std::shared_ptr<Player> player, std::string input) 
         auto command = Mud::instance().commands.find(str);
         if(command != Mud::instance().commands.end()) {
             args.erase(0);
-            (*command).second->callback(player->shared_from_this(), args);
+            (*(*command).second)(player->shared_from_this(), args);
             return true;
         }
+        player->sendMsg("Huh?\r\n");
     }
     return false;
 }

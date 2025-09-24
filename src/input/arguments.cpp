@@ -32,7 +32,9 @@ std::string Arguments::erase(const std::size_t idx) {
     if(idx < args.size()) {
         auto i = args.begin();
         std::advance(i, idx);
-        return *args.erase(i);
+        std::string r = *i;
+        args.erase(i);
+        return r;
     }
     return "";
 }

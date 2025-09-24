@@ -1,9 +1,11 @@
 #include "input/arguments.hpp"
 #include <command/command.hpp>
 #include <command/communication.hpp>
+#include <command/miscellaneous.hpp>
 
 void loadCommands() {
-    loadCommsCommands();
+    commands::loadCommsCommands();
+    commands::loadMiscellaneousCommands();
 }
 
 Command::Command(std::string name, std::string desc, std::string args, func callback) :

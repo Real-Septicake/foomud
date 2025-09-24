@@ -35,7 +35,8 @@ Mud::Mud() :
     acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 4000)),
     running(true), rooms()
 {
-    rooms.insert({0, std::make_shared<Room>()});
+    auto r = std::make_shared<Room>(0);
+    rooms.insert({r->vnum, r});
 }
 
 Mud::~Mud() {
