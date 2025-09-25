@@ -1,8 +1,14 @@
 #include "mud.hpp"
+#include "utils.hpp"
 #include <input/handlers/commands.hpp>
 #include <iostream>
 
 bool CommandHandler::process(std::shared_ptr<Player> player, std::string input) {
+    std::string trimmed = trim(input);
+    if(trimmed.empty()) {
+        player->sendMsg("Huh?\r\n");
+        return false;
+    }
     if(input[0] == (char)255) {
         std::cout << "negotiations:" << std::endl;
         for(auto c : input) {
