@@ -11,11 +11,18 @@
 bool NameHandler::process(std::shared_ptr<Player> player, std::string input) {
     std::string trimmed = trim(input);
     if(trimmed.empty()) {
-        player->sendMsg("Name cannot be blank\r\nName:");
+        player->sendMsg("Name cannot be blank\r\nName: ");
+        blank = true;
         return false;
     }
+    if(blank && trimmed.compare("blank") == 0) {
+        player->sendMsg("Yeah ok, smartass\r\nName: ");
+        blank = false;
+        return false;
+    }
+    blank = false;
     if(!lexy::match<CharacterParser>(lexy::zstring_input(("@"+trimmed).c_str()))) {
-        player->sendMsg("Name must only consist of [A-Z], [a-z], underscore, and hyphen\r\nName:");
+        player->sendMsg("Name must only consist of [A-Z], [a-z], underscore, and hyphen\r\nName: ");
         return false;
     }
     player->name = trimmed;
