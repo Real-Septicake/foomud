@@ -1,3 +1,4 @@
+#include "command/navigation.hpp"
 #include "input/arguments.hpp"
 #include <command/command.hpp>
 #include <command/communication.hpp>
@@ -5,7 +6,8 @@
 
 void loadCommands() {
     commands::loadCommsCommands();
-    commands::loadMiscellaneousCommands();
+    commands::loadMiscCommands();
+    commands::loadNavCommands();
 }
 
 Command::Command(std::string name, std::string desc, std::string args, func callback) :

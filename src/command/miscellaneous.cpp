@@ -4,11 +4,12 @@
 #include <memory>
 #include <enchantum/enchantum.hpp>
 
-void commands::loadMiscellaneousCommands() {
+void commands::loadMiscCommands() {
     Mud::instance().addCommand(std::make_shared<Command>("look", "", "look around", commands::look));
 }
 
 bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
+
     c->sendMsg("You are in Room " + toString(c->current_room->vnum) + "\r\n");
     auto others = c->current_room->getCharacters({c});
     if(!others.empty()) {

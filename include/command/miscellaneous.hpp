@@ -5,7 +5,7 @@
 
 namespace commands {
 
-void loadMiscellaneousCommands();
+void loadMiscCommands();
 
 bool look(std::shared_ptr<Character>, Arguments &);
 

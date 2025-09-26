@@ -4,8 +4,8 @@
 
 std::shared_ptr<Exit> Exit::getCorresponding() {
     for(auto e : to->exits) {
-        if(e->to == from)
-            return e;
+        if(e.second->to == from)
+            return e.second;
     }
     return nullptr;
 }
