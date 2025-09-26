@@ -1,0 +1,13 @@
+#ifndef NAVIGATION_COMMANDS_HPP
+#define NAVIGATION_COMMANDS_HPP
+
+#include <memory>
+#include <command/command.hpp>
+
+namespace commands {
+    void loadNavCommands();
+
+    bool go(std::shared_ptr<Character>, Arguments &);
+}
+
+#endif

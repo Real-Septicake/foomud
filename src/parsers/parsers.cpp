@@ -1,5 +1,6 @@
 #include "structure/exit.hpp"
 #include "utils.hpp"
+#include <cctype>
 #include <parsers/parsers.hpp>
 #include <lexy/action/validate.hpp>
 #include <characters/character.hpp>
@@ -13,7 +14,16 @@ std::shared_ptr<Character> parseCharacter(std::string name, std::shared_ptr<Char
     return nullptr;
 }
 
+std::string toLower(std::string s) {
+    std::string l = s;
+    for(unsigned int i = 0; i < l.size(); i++) {
+        l[i] = std::tolower(l[i]);
+    }
+    return l;
+}
+
 Direction parseDirection(std::string input) {
+    input = toLower(input);
     if(prefix("north", input))
         return Direction::North;
     if(prefix("south", input))
