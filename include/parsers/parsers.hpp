@@ -6,6 +6,7 @@
 #include <lexy/dsl.hpp>
 #include <lexy/callback/adapter.hpp>
 #include <lexy/lexeme.hpp>
+#include <structure/exit.hpp>
 
 class Character;
 
@@ -14,5 +15,7 @@ struct CharacterParser {
 };
 
 std::shared_ptr<Character> parseCharacter(std::string, std::shared_ptr<Character>);
+
+Direction parseDirection(std::string);
 
 #endif

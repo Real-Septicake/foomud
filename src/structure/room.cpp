@@ -1,12 +1,15 @@
 #include "characters/character.hpp"
 #include "characters/player.hpp"
+#include "mud.hpp"
 #include <iostream>
 #include <memory>
 #include <set>
 #include <structure/room.hpp>
 
-Room::Room(std::size_t vnum) :
-    characters(), vnum(vnum)
+static std::size_t vnum_count = 0;
+
+Room::Room() :
+    characters(), vnum(vnum_count++)
 {
 }
 
@@ -51,4 +54,15 @@ std::shared_ptr<Character> Room::findCharacter(std::string name) {
             return c;
     }
     return nullptr;
+}
+
+bool Room::addExit(std::shared_ptr<Room> to, Direction dir) {
+    if(exits.contains(dir))
+        return false;
+    auto e = std::make_shared<Exit>();
+    e->to = to;
+    e->from = shared_from_this();
+    e->direction = dir;
+    exits.insert({dir, e});
+    return true;
 }

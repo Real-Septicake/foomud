@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstddef>
 #include <iterator>
 #include <sstream>
@@ -32,4 +33,8 @@ std::vector<std::string> words(std::string &s) {
     std::istream_iterator<std::string> b(iss);
     std::istream_iterator<std::string> e;
     return std::vector<std::string>(b, e);
+}
+
+bool prefix(std::string source, std::string prefix) {
+    return std::mismatch(prefix.begin(), prefix.end(), source.begin()).first == prefix.end();
 }

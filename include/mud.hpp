@@ -5,6 +5,7 @@
 #include "characters/player.hpp"
 #include "structure/room.hpp"
 #include <command/command.hpp>
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <string>
@@ -16,6 +17,7 @@ class Mud {
     private:
         asio::io_context context;
         asio::ip::tcp::acceptor acceptor;
+        std::size_t max_room_vnum;
         long port;
         bool running;
         int max_sock;
@@ -35,6 +37,7 @@ class Mud {
         void closeConnection(std::shared_ptr<Player>);
         bool addCommand(std::shared_ptr<Command>);
         void shutdown();
+        std::size_t maxRoomVnum() const;
         static Mud& instance();
         std::map<unsigned int, std::shared_ptr<Room>> rooms;
         std::map<std::string, std::shared_ptr<Command>> commands;

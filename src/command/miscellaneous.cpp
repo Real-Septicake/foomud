@@ -2,13 +2,14 @@
 #include "utils.hpp"
 #include <command/miscellaneous.hpp>
 #include <memory>
+#include <enchantum/enchantum.hpp>
 
 void commands::loadMiscellaneousCommands() {
     Mud::instance().addCommand(std::make_shared<Command>("look", "", "look around", commands::look));
 }
 
 bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
-    c->sendMsg("You are in " + toString(c->current_room->vnum) + "\r\n");
+    c->sendMsg("You are in Room " + toString(c->current_room->vnum) + "\r\n");
     auto others = c->current_room->getCharacters({c});
     if(!others.empty()) {
         c->sendMsg("You see:\r\n");
@@ -24,6 +25,14 @@ bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
             list += (*i)->name;
         }
         c->sendMsg("  " + list + "\r\n");
+    }
+    if(!c->current_room->exits.empty()) {
+        c->sendMsg("The obvious exits are:\r\n");
+        for(auto i : c->current_room->exits) {
+            std::string dir = std::string(enchantum::to_string(i.first));
+            std::string name = "Room " + toString(i.second->to->vnum);
+            c->sendMsg("  " + dir + " : " + name + "\r\n");
+        }
     }
     return true;
 };

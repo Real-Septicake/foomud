@@ -5,10 +5,12 @@
 #include "input/handlers/handler.hpp"
 #include "input/handlers/name.hpp"
 #include "repeating_timer.hpp"
+#include "structure/exit.hpp"
 #include <asm-generic/socket.h>
 #include <cerrno>
 #include <chrono>
 #include <csignal>
+#include <cstddef>
 #include <cstdio>
 #include <exception>
 #include <memory>
@@ -33,10 +35,13 @@ void sig_handler(int) {
 Mud::Mud() :
     context(),
     acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 4000)),
-    running(true), rooms()
+    max_room_vnum(), running(true), rooms()
 {
-    auto r = std::make_shared<Room>(0);
-    rooms.insert({r->vnum, r});
+    auto r0 = std::make_shared<Room>();
+    auto r1 = std::make_shared<Room>();
+    r0->addExit(r1, Direction::East);
+    r1->addExit(r0, Direction::West);
+    rooms.insert({r0->vnum, r0});
 }
 
 Mud::~Mud() {
@@ -174,4 +179,8 @@ void Mud::broadcast(const std::string &s) {
 Mud& Mud::instance() {
     static Mud i;
     return i;
+}
+
+std::size_t Mud::maxRoomVnum() const {
+    return max_room_vnum;
 }
