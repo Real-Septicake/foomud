@@ -6,10 +6,8 @@
 #include <set>
 #include <structure/room.hpp>
 
-static std::size_t vnum_count = 0;
-
 Room::Room() :
-    characters(), vnum(vnum_count++)
+    characters(), vnum(Mud::instance().maxRoomVnum() + 1)
 {
 }
 

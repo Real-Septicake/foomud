@@ -41,6 +41,7 @@ class Mud {
         static Mud& instance();
         std::map<unsigned int, std::shared_ptr<Room>> rooms;
         std::map<std::string, std::shared_ptr<Command>> commands;
+        bool addRoom(std::shared_ptr<Room>);
 };
 
 #endif

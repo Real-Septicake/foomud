@@ -37,11 +37,6 @@ Mud::Mud() :
     acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 4000)),
     max_room_vnum(), running(true), rooms()
 {
-    auto r0 = std::make_shared<Room>();
-    auto r1 = std::make_shared<Room>();
-    r0->addExit(r1, Direction::East);
-    r1->addExit(r0, Direction::West);
-    rooms.insert({r0->vnum, r0});
 }
 
 Mud::~Mud() {
@@ -61,6 +56,14 @@ bool Mud::run() {
     }
 
     loadCommands();
+
+    auto r0 = std::make_shared<Room>();
+    addRoom(r0);
+    auto r1 = std::make_shared<Room>();
+    addRoom(r1);
+    r0->addExit(r1, Direction::East);
+    r1->addExit(r0, Direction::West);
+    r1->addExit(r1, Direction::Down);
 
     std::cout << "starting loop" << std::endl;
 
@@ -115,7 +118,7 @@ void Mud::acceptConnections() {
                 p->handler = std::static_pointer_cast<Handler>(std::make_shared<NameHandler>());
                 p->sendMsg("Greetings\r\nName: ");
                 players.push_back(p);
-                auto r = rooms.find(0);
+                auto r = rooms.find(1);
                 if(r != rooms.end())
                     r->second->addCharacter(p);
             }
@@ -183,4 +186,12 @@ Mud& Mud::instance() {
 
 std::size_t Mud::maxRoomVnum() const {
     return max_room_vnum;
+}
+
+bool Mud::addRoom(std::shared_ptr<Room> room) {
+    bool r = rooms.insert({room->vnum, room}).second;
+    if(r) {
+        max_room_vnum = std::max(max_room_vnum, room->vnum);
+    }
+    return r;
 }
