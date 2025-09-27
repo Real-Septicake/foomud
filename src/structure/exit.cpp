@@ -3,8 +3,8 @@
 #include <structure/exit.hpp>
 
 std::shared_ptr<Exit> Exit::getCorresponding() {
-    for(auto e : to->exits) {
-        if(e.second->to == from)
+    for(auto e : to.lock()->exits) {
+        if(e.second->to.lock() == from.lock())
             return e.second;
     }
     return nullptr;

@@ -43,7 +43,7 @@ bool commands::go(std::shared_ptr<Character> c, Arguments &args) {
     }
     c->current_room->send(c->name + " has gone " + std::string(enchantum::to_string(dir)) + "\r\n", {c});
     c->current_room->remCharacter(c);
-    e->second->to->addCharacter(c);
+    e->second->to.lock()->addCharacter(c);
     c->current_room->send(c->name + " has arrived from the " + std::string(enchantum::to_string(dir)) + "\r\n", {c});
     c->sendMsg("You have entered Room " + toString(c->current_room->vnum) + "\r\n");
     return true;

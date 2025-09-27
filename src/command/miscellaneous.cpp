@@ -31,7 +31,7 @@ bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
         c->sendMsg("The obvious exits are:\r\n");
         for(auto i : c->current_room->exits) {
             std::string dir = std::string(enchantum::to_string(i.first));
-            std::string name = "Room " + toString(i.second->to->vnum);
+            std::string name = "Room " + toString(i.second->to.lock()->vnum);
             c->sendMsg("  " + dir + " : " + name + "\r\n");
         }
     }
