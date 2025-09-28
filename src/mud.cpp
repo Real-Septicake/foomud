@@ -65,6 +65,11 @@ bool Mud::run() {
     r1->addExit(r0, Direction::West);
     r1->addExit(r1, Direction::Down);
 
+    auto i = std::make_shared<Item>();
+    i->name = "ITEM!!!!";
+    addItem(i);
+    r1->addItem(i);
+
     std::cout << "starting loop" << std::endl;
 
     RepeatingTimer timer(context, std::chrono::milliseconds(50));
@@ -188,10 +193,22 @@ std::size_t Mud::maxRoomVnum() const {
     return max_room_vnum;
 }
 
+std::size_t Mud::maxItemVnum() const {
+    return max_item_vnum;
+}
+
 bool Mud::addRoom(std::shared_ptr<Room> room) {
     bool r = rooms.insert({room->vnum, room}).second;
     if(r) {
         max_room_vnum = std::max(max_room_vnum, room->vnum);
+    }
+    return r;
+}
+
+bool Mud::addItem(std::shared_ptr<Item> item) {
+    bool r = items.insert({item->vnum, item}).second;
+    if(r) {
+        max_item_vnum = std::max(max_item_vnum, item->vnum);
     }
     return r;
 }

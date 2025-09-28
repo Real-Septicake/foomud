@@ -12,8 +12,8 @@ bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
 
     c->sendMsg("You are in Room " + toString(c->current_room->vnum) + "\r\n");
     auto others = c->current_room->getCharacters({c});
+    c->sendMsg("You see:\r\n");
     if(!others.empty()) {
-        c->sendMsg("You see:\r\n");
         std::string list("");
         for(auto i = others.begin(); i != others.end(); ++i) {
             if(i != others.begin()) {
@@ -26,6 +26,9 @@ bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
             list += (*i)->name;
         }
         c->sendMsg("  " + list + "\r\n");
+    }
+    for(auto i : c->current_room->items) {
+        c->sendMsg("- " + i->name + "\r\n");
     }
     if(!c->current_room->exits.empty()) {
         c->sendMsg("The obvious exits are:\r\n");

@@ -64,3 +64,22 @@ bool Room::addExit(std::shared_ptr<Room> to, Direction dir) {
     exits.insert({dir, e});
     return true;
 }
+
+bool Room::remExit(Direction d) {
+    return exits.erase(d) == 1;
+}
+
+bool Room::addItem(std::shared_ptr<Item> item) {
+    if(items.contains(item))
+        return false;
+    item->room = shared_from_this();
+    return items.insert(item).second;
+}
+
+bool Room::remItem(std::shared_ptr<Item> item) {
+    if(!items.contains(item))
+        return false;
+    item->room.reset();
+    items.erase(item);
+    return true;
+}

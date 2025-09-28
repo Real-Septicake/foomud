@@ -2,6 +2,7 @@
 #define ROOM_HPP
 
 #include "structure/exit.hpp"
+#include <items/item.hpp>
 #include <cstddef>
 #include <map>
 #include <memory>
@@ -16,6 +17,7 @@ class Room : public std::enable_shared_from_this<Room> {
         std::set<std::shared_ptr<Character>> characters;
     public:
         std::map<Direction, std::shared_ptr<Exit>> exits;
+        std::set<std::shared_ptr<Item>> items;
         const std::size_t vnum;
         Room();
         ~Room();
@@ -25,6 +27,11 @@ class Room : public std::enable_shared_from_this<Room> {
         std::shared_ptr<Character> findCharacter(std::string);
         void send(std::string, std::set<std::shared_ptr<Character>>);
         bool addExit(std::shared_ptr<Room>, Direction);
+        bool remExit(Direction);
+        bool addItem(std::shared_ptr<Item>);
+        bool remItem(std::shared_ptr<Item>);
+
+        friend Exit;
 };
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "asio/io_context.hpp"
 #include "characters/player.hpp"
+#include "items/item.hpp"
 #include "structure/room.hpp"
 #include <command/command.hpp>
 #include <cstddef>
@@ -18,6 +19,7 @@ class Mud {
         asio::io_context context;
         asio::ip::tcp::acceptor acceptor;
         std::size_t max_room_vnum;
+        std::size_t max_item_vnum;
         long port;
         bool running;
         int max_sock;
@@ -38,10 +40,13 @@ class Mud {
         bool addCommand(std::shared_ptr<Command>);
         void shutdown();
         std::size_t maxRoomVnum() const;
+        std::size_t maxItemVnum() const;
         static Mud& instance();
-        std::map<unsigned int, std::shared_ptr<Room>> rooms;
+        std::map<std::size_t, std::shared_ptr<Room>> rooms;
+        std::map<std::size_t, std::shared_ptr<Item>> items;
         std::map<std::string, std::shared_ptr<Command>> commands;
         bool addRoom(std::shared_ptr<Room>);
+        bool addItem(std::shared_ptr<Item>);
 };
 
 #endif
