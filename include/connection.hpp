@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <string>
-#include <asio.hpp>
+#include <asio/ip/tcp.hpp>
 
 class Player;
 

@@ -67,6 +67,7 @@ bool Mud::run() {
 
     auto i = std::make_shared<Item>();
     i->name = "ITEM!!!!";
+    i->article = Article::Vowel;
     addItem(i);
     r1->addItem(i);
 

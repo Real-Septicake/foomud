@@ -2,6 +2,7 @@
 #include "asio/completion_condition.hpp"
 #include "asio/error.hpp"
 #include "asio/ip/tcp.hpp"
+#include "asio/read.hpp"
 #include "asio/write.hpp"
 #include "mud.hpp"
 #include <connection.hpp>

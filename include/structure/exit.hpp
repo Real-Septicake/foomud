@@ -2,17 +2,8 @@
 #define EXIT_HPP
 
 #include <memory>
+#include <enums/directions.hpp>
 class Room;
-
-enum Direction {
-    None,
-    North,
-    South,
-    East,
-    West,
-    Up,
-    Down
-};
 
 class Exit : std::enable_shared_from_this<Exit> {
     public:

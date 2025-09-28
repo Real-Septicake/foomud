@@ -1,3 +1,4 @@
+#include "enums/article.hpp"
 #include "mud.hpp"
 #include "utils.hpp"
 #include <command/miscellaneous.hpp>
@@ -28,7 +29,7 @@ bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
         c->sendMsg("  " + list + "\r\n");
     }
     for(auto i : c->current_room->items) {
-        c->sendMsg("- " + i->name + "\r\n");
+        c->sendMsg("- " + toArticle(i->article) + i->name + "\r\n");
     }
     if(!c->current_room->exits.empty()) {
         c->sendMsg("The obvious exits are:\r\n");
