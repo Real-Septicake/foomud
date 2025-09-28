@@ -7,7 +7,6 @@
 #include "mud.hpp"
 #include <connection.hpp>
 #include <iostream>
-#include <ostream>
 #include <utils.hpp>
 #include <sys/socket.h>
 #include <sys/types.h>
