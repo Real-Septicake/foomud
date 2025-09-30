@@ -11,12 +11,14 @@
 #include <vector>
 
 class Character;
+class Building;
 
 class Room : public std::enable_shared_from_this<Room> {
     private:
         std::set<std::shared_ptr<Character>> characters;
     public:
         std::map<Direction, std::shared_ptr<Exit>> exits;
+        std::map<std::string, std::shared_ptr<Building>> buildings;
         std::set<std::shared_ptr<Item>> items;
         const std::size_t vnum;
         Room();
@@ -30,6 +32,8 @@ class Room : public std::enable_shared_from_this<Room> {
         bool remExit(Direction);
         bool addItem(std::shared_ptr<Item>);
         bool remItem(std::shared_ptr<Item>);
+        bool addBuilding(std::shared_ptr<Building>);
+        bool remBuilding(std::shared_ptr<Building>);
 
         friend Exit;
 };

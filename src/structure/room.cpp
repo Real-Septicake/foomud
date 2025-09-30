@@ -5,6 +5,7 @@
 #include <memory>
 #include <set>
 #include <structure/room.hpp>
+#include <structure/building.hpp>
 
 Room::Room() :
     characters(), vnum(Mud::instance().maxRoomVnum() + 1)
@@ -81,5 +82,21 @@ bool Room::remItem(std::shared_ptr<Item> item) {
         return false;
     item->room.reset();
     items.erase(item);
+    return true;
+}
+
+bool Room::addBuilding(std::shared_ptr<Building> building) {
+    if(buildings.contains(building->name))
+        return false;
+    building->outer_room = shared_from_this();
+    buildings.insert({building->name, building});
+    return true;
+}
+
+bool Room::remBuilding(std::shared_ptr<Building> building) {
+    if(!buildings.contains(building->name))
+        return false;
+    building->outer_room.reset();
+    buildings.erase(building->name);
     return true;
 }

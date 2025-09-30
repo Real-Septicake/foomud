@@ -13,8 +13,12 @@ bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
 
     c->sendMsg("You are in Room " + toString(c->current_room->vnum) + "\r\n");
     auto others = c->current_room->getCharacters({c});
-    c->sendMsg("You see:\r\n");
+    bool see_msg = false;
     if(!others.empty()) {
+        if(!see_msg) {
+            c->sendMsg("You see:\r\n");
+            see_msg = true;
+        }
         std::string list("");
         for(auto i = others.begin(); i != others.end(); ++i) {
             if(i != others.begin()) {
@@ -28,8 +32,14 @@ bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
         }
         c->sendMsg("  " + list + "\r\n");
     }
-    for(auto i : c->current_room->items) {
-        c->sendMsg("- " + toArticle(i->article) + i->name + "\r\n");
+    if(!c->current_room->items.empty()) {
+        if(!see_msg) {
+            c->sendMsg("You see:\r\n");
+            see_msg = true;
+        }
+        for(auto &i : c->current_room->items) {
+            c->sendMsg("- " + toArticle(i->article) + i->name + "\r\n");
+        }
     }
     if(!c->current_room->exits.empty()) {
         c->sendMsg("The obvious exits are:\r\n");
@@ -38,6 +48,15 @@ bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
             std::string name = "Room " + toString(i.second->to.lock()->vnum);
             c->sendMsg("  " + dir + " : " + name + "\r\n");
         }
+    }
+    if(!c->current_room->buildings.empty()) {
+        if(c->current_room->buildings.size() == 1) {
+            c->sendMsg("You see the nearby building:\r\n");
+        } else {
+            c->sendMsg("You see some nearby buildings:\r\n");
+        }
+        for(auto &b : c->current_room->buildings)
+            c->sendMsg("  " + b.first + "\r\n");
     }
     return true;
 };

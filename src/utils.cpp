@@ -38,3 +38,12 @@ std::vector<std::string> words(std::string &s) {
 bool prefix(std::string source, std::string prefix) {
     return std::mismatch(prefix.begin(), prefix.end(), source.begin()).first == prefix.end();
 }
+
+
+std::string toLower(std::string s) {
+    std::string l = s;
+    for(unsigned int i = 0; i < l.size(); i++) {
+        l[i] = std::tolower(l[i]);
+    }
+    return l;
+}

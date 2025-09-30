@@ -1,6 +1,5 @@
-#include "structure/exit.hpp"
-#include "utils.hpp"
 #include <cctype>
+#include <map>
 #include <parsers/parsers.hpp>
 #include <lexy/action/validate.hpp>
 #include <characters/character.hpp>
@@ -14,27 +13,22 @@ std::shared_ptr<Character> parseCharacter(std::string name, std::shared_ptr<Char
     return nullptr;
 }
 
-std::string toLower(std::string s) {
-    std::string l = s;
-    for(unsigned int i = 0; i < l.size(); i++) {
-        l[i] = std::tolower(l[i]);
-    }
-    return l;
-}
+std::map<std::string, Direction> dirs {
+    {"north", Direction::North},
+    {"south", Direction::South},
+    {"east", Direction::East},
+    {"west", Direction::West},
+    {"up", Direction::Up},
+    {"down", Direction::Down},
+    {"in", Direction::In},
+    {"out", Direction::Out}
+};
 
 Direction parseDirection(std::string input) {
     input = toLower(input);
-    if(prefix("north", input))
-        return Direction::North;
-    if(prefix("south", input))
-        return Direction::South;
-    if(prefix("east", input))
-        return Direction::East;
-    if(prefix("west", input))
-        return Direction::West;
-    if(prefix("up", input))
-        return Direction::Up;
-    if(prefix("down", input))
-        return Direction::Down;
+    for(auto i = dirs.begin(); i != dirs.end(); ++i) {
+        if((*i).first.starts_with(input))
+            return (*i).second;
+    }
     return Direction::None;
 }

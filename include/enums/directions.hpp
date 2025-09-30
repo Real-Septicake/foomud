@@ -8,7 +8,9 @@ enum class Direction {
     East,
     West,
     Up,
-    Down
+    Down,
+    In,
+    Out
 };
 
 #endif

@@ -5,6 +5,8 @@
 #include "characters/player.hpp"
 #include "items/item.hpp"
 #include "structure/room.hpp"
+#include "structure/building.hpp"
+#include "updater/updater.hpp"
 #include <command/command.hpp>
 #include <cstddef>
 #include <map>
@@ -20,6 +22,7 @@ class Mud {
         asio::ip::tcp::acceptor acceptor;
         std::size_t max_room_vnum;
         std::size_t max_item_vnum;
+        std::size_t max_building_vnum;
         long port;
         bool running;
         int max_sock;
@@ -41,12 +44,17 @@ class Mud {
         void shutdown();
         std::size_t maxRoomVnum() const;
         std::size_t maxItemVnum() const;
+        std::size_t maxBuildingVnum() const;
         static Mud& instance();
         std::map<std::size_t, std::shared_ptr<Room>> rooms;
         std::map<std::size_t, std::shared_ptr<Item>> items;
+        std::map<std::size_t, std::shared_ptr<Building>> buildings;
         std::map<std::string, std::shared_ptr<Command>> commands;
         bool addRoom(std::shared_ptr<Room>);
         bool addItem(std::shared_ptr<Item>);
+        bool addBuilding(std::shared_ptr<Building>);
+
+        friend Updater;
 };
 
 #endif
