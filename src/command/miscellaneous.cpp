@@ -49,14 +49,5 @@ bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
             c->sendMsg("  " + dir + " : " + name + "\r\n");
         }
     }
-    if(!c->current_room->buildings.empty()) {
-        if(c->current_room->buildings.size() == 1) {
-            c->sendMsg("You see the nearby building:\r\n");
-        } else {
-            c->sendMsg("You see some nearby buildings:\r\n");
-        }
-        for(auto &b : c->current_room->buildings)
-            c->sendMsg("  " + b.first + "\r\n");
-    }
     return true;
 };

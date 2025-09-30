@@ -9,8 +9,6 @@ namespace commands {
     void loadNavCommands();
 
     bool go(std::shared_ptr<Character>, Arguments &);
-
-    bool enter(std::shared_ptr<Character>, Arguments &);
 }
 
 #endif

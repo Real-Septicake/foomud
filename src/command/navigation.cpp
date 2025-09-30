@@ -47,26 +47,3 @@ bool commands::go(std::shared_ptr<Character> c, Arguments &args) {
     c->sendMsg("You have entered Room " + toString(c->current_room->vnum) + "\r\n");
     return true;
 }
-
-bool commands::enter(std::shared_ptr<Character> c, Arguments &args) {
-    if(args.size() == 0) {
-        c->sendMsg("Enter what?\r\n");
-        return false;
-    }
-    if(args.size() != 1) {
-        c->sendMsg("You can only enter one building\r\n");
-        return false;
-    }
-    std::string name = toLower(args[0]);
-    auto building = c->current_room->buildings[name];
-    if(building == nullptr) {
-        c->sendMsg("Where's that?\r\n");
-        return false;
-    }
-    c->current_room->send(c->name + " has entered " + building->name + "\r\n", {c});
-    c->current_room->remCharacter(c);
-    building->entrance_room->addCharacter(c);
-    c->current_room->send(c->name + " has entered " + building->name + "\r\n", {c});
-    c->sendMsg("You have entered + " + building->name + "\r\n");
-    return true;
-}

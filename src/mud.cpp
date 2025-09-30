@@ -66,11 +66,6 @@ bool Mud::run() {
     r1->addExit(r0, Direction::West);
     r1->addExit(r1, Direction::Down);
 
-    auto r = std::make_shared<Room>();
-    auto b = std::make_shared<Building>("building0", r);
-    addBuilding(b);
-    r0->addBuilding(b);
-
     auto i = std::make_shared<Item>();
     i->name = "ITEM!!!!";
     i->article = Article::Vowel;
@@ -205,10 +200,6 @@ std::size_t Mud::maxItemVnum() const {
     return max_item_vnum;
 }
 
-std::size_t Mud::maxBuildingVnum() const {
-    return max_building_vnum;
-}
-
 bool Mud::addRoom(std::shared_ptr<Room> room) {
     bool r = rooms.insert({room->vnum, room}).second;
     if(r)
@@ -220,12 +211,5 @@ bool Mud::addItem(std::shared_ptr<Item> item) {
     bool r = items.insert({item->vnum, item}).second;
     if(r)
         max_item_vnum = std::max(max_item_vnum, item->vnum);
-    return r;
-}
-
-bool Mud::addBuilding(std::shared_ptr<Building> building) {
-    bool r = buildings.insert({building->vnum, building}).second;
-    if(r)
-        max_building_vnum = std::max(max_building_vnum, building->vnum);
     return r;
 }
