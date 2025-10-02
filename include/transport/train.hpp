@@ -5,7 +5,7 @@
 #include "transport/transport.hpp"
 #include <memory>
 
-class Train : Transport {
+class Train : public Transport {
     public:
         Train();
         enum Direction {

@@ -6,6 +6,7 @@
 #include "input/handlers/name.hpp"
 #include "repeating_timer.hpp"
 #include "structure/exit.hpp"
+#include "transport/train.hpp"
 #include "updater/updater.hpp"
 #include <asm-generic/socket.h>
 #include <cerrno>
@@ -71,6 +72,24 @@ bool Mud::run() {
     i->article = Article::Vowel;
     addItem(i);
     r1->addItem(i);
+
+    auto r = std::make_shared<Room>();
+    addRoom(r);
+    auto t = std::make_shared<Train>();
+    addTrans(t->shared_from_this());
+    t->internal_room = r;
+
+    auto s1 = std::make_shared<Stop>(10, r0);
+    addStop(s1);
+    auto s2 = std::make_shared<Stop>(0, r1);
+    addStop(s2);
+    s2->prev = s1;
+    s1->next = s2;
+
+    t->stop = s1;
+
+    t->internal_room->addExit(r0, Direction::Out);
+    r0->addExit(t->internal_room, Direction::In);
 
     std::cout << "starting loop" << std::endl;
 

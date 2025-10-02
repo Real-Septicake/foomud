@@ -6,7 +6,7 @@
 #include <memory>
 #include <utils.hpp>
 
-class Transport : enable_shared_from_base<Transport>, Updatable {
+class Transport : public enable_shared_from_base<Transport>, Updatable {
     public:
         std::size_t vnum;
         Transport();
