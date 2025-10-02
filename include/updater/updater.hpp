@@ -3,12 +3,12 @@
 
 class Updater {
     private:
-        unsigned int tickLength; // seconds per tick
-        unsigned int hourLength; // how many ticks per hour
         unsigned int tickCounter;
         unsigned int hourCounter;
         Updater();
     public:
+        unsigned int const tickLength; // seconds per tick
+        unsigned int const hourLength; // how many ticks per hour
         static Updater& instance();
         void update();
 };

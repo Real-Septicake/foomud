@@ -25,7 +25,7 @@ class Room : public std::enable_shared_from_this<Room> {
         bool remCharacter(std::shared_ptr<Character>);
         std::vector<std::shared_ptr<Character>> getCharacters(std::set<std::shared_ptr<Character>>);
         std::shared_ptr<Character> findCharacter(std::string);
-        void send(std::string, std::set<std::shared_ptr<Character>>);
+        void send(std::string, std::set<std::shared_ptr<Character>> = {});
         bool addExit(std::shared_ptr<Room>, Direction);
         bool remExit(Direction);
         bool addItem(std::shared_ptr<Item>);

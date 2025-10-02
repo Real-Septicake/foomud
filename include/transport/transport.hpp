@@ -20,6 +20,7 @@ class Transport : enable_shared_from_base<Transport>, Updatable {
     protected:
         virtual void tick() = 0;
         virtual void hour() = 0;
+        [[nodiscard("Need to check if _actually_ arrived")]]
         bool arrive(std::shared_ptr<Room>);
         void leave();
 };
