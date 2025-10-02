@@ -36,7 +36,7 @@ void sig_handler(int) {
 Mud::Mud() :
     context(),
     acceptor(context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 4000)),
-    max_room_vnum(), running(true), rooms()
+    max_room_vnum(), max_item_vnum(), running(true), rooms()
 {
 }
 
@@ -125,7 +125,7 @@ void Mud::acceptConnections() {
                 p->init(std::move(c));
                 p->handler = std::static_pointer_cast<Handler>(std::make_shared<NameHandler>());
                 p->sendMsg("Greetings\r\nName: ");
-                players.push_back(p);
+                players.insert(p);
                 auto r = rooms.find(1);
                 if(r != rooms.end())
                     r->second->addCharacter(p);
@@ -172,13 +172,9 @@ void Mud::removeClosedConnections() {
 }
 
 void Mud::removeConnection(std::shared_ptr<Player> connection) {
-    for(auto it = players.begin(); it != players.end(); ++it) {
-        if(connection == *it) {
-            connection->current_room->remCharacter(connection->shared_from_this());
-            players.erase(it);
-            return;
-        }
-    }
+    connection->current_room->remCharacter(connection->shared_from_this());
+    players.erase(connection);
+    return;
 }
 
 void Mud::broadcast(const std::string &s) {
@@ -200,6 +196,14 @@ std::size_t Mud::maxItemVnum() const {
     return max_item_vnum;
 }
 
+std::size_t Mud::maxStopVnum() const {
+    return max_stop_vnum;
+}
+
+std::size_t Mud::maxTransVnum() const {
+    return max_trans_vnum;
+}
+
 bool Mud::addRoom(std::shared_ptr<Room> room) {
     bool r = rooms.insert({room->vnum, room}).second;
     if(r)
@@ -211,5 +215,19 @@ bool Mud::addItem(std::shared_ptr<Item> item) {
     bool r = items.insert({item->vnum, item}).second;
     if(r)
         max_item_vnum = std::max(max_item_vnum, item->vnum);
+    return r;
+}
+
+bool Mud::addStop(std::shared_ptr<Stop> stop) {
+    bool r = stops.insert({stop->vnum, stop}).second;
+    if(r)
+        max_stop_vnum = std::max(max_stop_vnum, stop->vnum);
+    return r;
+}
+
+bool Mud::addTrans(std::shared_ptr<Transport> trans) {
+    bool r = transes.insert({trans->vnum, trans}).second;
+    if(r)
+        max_stop_vnum = std::max(max_stop_vnum, trans->vnum);
     return r;
 }
