@@ -2,6 +2,7 @@
 #include "input/handlers/handler.hpp"
 #include "parsers/parsers.hpp"
 #include "utils.hpp"
+#include "mud.hpp"
 #include <input/handlers/name.hpp>
 #include <input/handlers/commands.hpp>
 #include <lexy/action/match.hpp>
@@ -32,4 +33,7 @@ bool NameHandler::process(std::shared_ptr<Player> player, std::string input) {
 
 void NameHandler::next(std::shared_ptr<Player> player) {
     player->handler = std::static_pointer_cast<Handler>(std::make_shared<CommandHandler>());
+    auto r = Mud::instance().rooms.find(1);
+    if(r != Mud::instance().rooms.end())
+        r->second->addCharacter(player);
 }

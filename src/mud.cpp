@@ -87,7 +87,10 @@ bool Mud::run() {
     addStop(s1);
     auto s2 = std::make_shared<Stop>(10, r1);
     addStop(s2);
+    auto s3 = std::make_shared<Stop>(0, r2);
+    s3->prev = s2;
     s2->prev = s1;
+    s2->next = s3;
     s1->next = s2;
 
     t->stop = s1;
@@ -149,9 +152,6 @@ void Mud::acceptConnections() {
                 p->handler = std::static_pointer_cast<Handler>(std::make_shared<NameHandler>());
                 p->sendMsg("Greetings\r\nName: ");
                 players.insert(p);
-                auto r = rooms.find(1);
-                if(r != rooms.end())
-                    r->second->addCharacter(p);
             }
 
             acceptConnections();
