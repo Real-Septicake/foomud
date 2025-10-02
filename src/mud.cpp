@@ -63,8 +63,12 @@ bool Mud::run() {
     addRoom(r0);
     auto r1 = std::make_shared<Room>();
     addRoom(r1);
+    auto r2 = std::make_shared<Room>();
+    addRoom(r2);
     r0->addExit(r1, Direction::East);
     r1->addExit(r0, Direction::West);
+    r1->addExit(r2, Direction::East);
+    r2->addExit(r1, Direction::West);
     r1->addExit(r1, Direction::Down);
 
     auto i = std::make_shared<Item>();
@@ -79,9 +83,9 @@ bool Mud::run() {
     addTrans(t->shared_from_this());
     t->internal_room = r;
 
-    auto s1 = std::make_shared<Stop>(10, r0);
+    auto s1 = std::make_shared<Stop>(7, r0);
     addStop(s1);
-    auto s2 = std::make_shared<Stop>(0, r1);
+    auto s2 = std::make_shared<Stop>(10, r1);
     addStop(s2);
     s2->prev = s1;
     s1->next = s2;
