@@ -15,8 +15,6 @@ inline std::string toArticle(Article a) {
             return "an ";
         case Article::Consonant:
             return "a ";
-        case Article::None:
-            return "";
         default:
             return "";
     }

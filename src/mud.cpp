@@ -72,7 +72,7 @@ bool Mud::run() {
     r1->addExit(r1, Direction::Down);
 
     auto i = std::make_shared<Item>();
-    i->name = "ITEM!!!!";
+    i->name = "item";
     i->article = Article::Vowel;
     addItem(i);
     r1->addItem(i);

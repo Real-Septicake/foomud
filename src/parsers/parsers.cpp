@@ -27,7 +27,7 @@ std::map<std::string, Direction> dirs {
 Direction parseDirection(std::string input) {
     input = toLower(input);
     for(auto i = dirs.begin(); i != dirs.end(); ++i) {
-        if((*i).first.starts_with(input))
+        if(i->first.starts_with(input))
             return (*i).second;
     }
     return Direction::None;

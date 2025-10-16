@@ -2,7 +2,8 @@
 #include <iostream>
 #include <transport/train.hpp>
 
-Train::Train()
+Train::Train() :
+    progress(), stop(nullptr)
 {
 }
 
@@ -23,6 +24,7 @@ next:
                 }
                 return next;
     };
+
     progress++;
     switch(s) {
         case Running:

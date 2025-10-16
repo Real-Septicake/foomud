@@ -8,12 +8,15 @@
 
 class Room;
 
+class Character;
+
 class Item {
     public:
         Item();
         std::shared_ptr<Room> room;
+        std::shared_ptr<Character> owner;
         Article article;
-        const std::size_t vnum;
+        std::size_t vnum;
         std::string name;
 };
 

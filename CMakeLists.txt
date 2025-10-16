@@ -22,6 +22,12 @@ FetchContent_MakeAvailable(enchantum)
 FetchContent_Declare(lexy URL https://lexy.foonathan.net/download/lexy-src.zip)
 FetchContent_MakeAvailable(lexy)
 
+FetchContent_Declare(asio
+    GIT_REPOSITORY "https://github.com/chriskohlhoff/asio"
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(asio)
+
 file(GLOB_RECURSE SRC
     ./src/*.cpp
     ./src/**/*.cpp
@@ -33,6 +39,7 @@ target_include_directories(
     ${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${enchantum_SOURCE_DIR}/enchantum/include
+    ${asio_SOURCE_DIR}/asio/include
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE foonathan::lexy foonathan::lexy::ext)
