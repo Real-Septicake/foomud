@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cctype>
 #include <cstddef>
 #include <iterator>
 #include <sstream>
@@ -46,4 +47,22 @@ std::string toLower(std::string s) {
         l[i] = std::tolower(l[i]);
     }
     return l;
+}
+
+std::string toCapital(std::string s) {
+    std::string c = s;
+    if(c.size() == 0)
+        return "";
+    c[0] = std::toupper(c[0]);
+    bool seen_space = false;
+    for(size_t i = 1; i < c.size(); i++) {
+        if(c[i] == ' ') {
+            seen_space = true;
+            continue;
+        }
+        if(seen_space) {
+            c[i] = std::toupper(c[i]);
+        }
+    }
+    return c;
 }

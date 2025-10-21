@@ -1,4 +1,4 @@
-#include "enums/article.hpp"
+#include "enums/room_flags.hpp"
 #include "mud.hpp"
 #include "utils.hpp"
 #include <command/miscellaneous.hpp>
@@ -10,8 +10,11 @@ void commands::loadMiscCommands() {
 }
 
 bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
-
     c->sendMsg("You are in Room " + toString(c->current_room->vnum) + "\r\n");
+    if(c->current_room->flags & (unsigned char) RoomFlag::Unlit) {
+        c->sendMsg("You cannot see.\r\n");
+        return false;
+    }
     auto others = c->current_room->getCharacters({c});
     bool see_msg = false;
     if(!others.empty()) {
@@ -38,7 +41,7 @@ bool commands::look(std::shared_ptr<Character> c, Arguments &/*args*/) {
             see_msg = true;
         }
         for(auto &i : c->current_room->items) {
-            c->sendMsg("- " + toArticle(i->article) + i->name + "\r\n");
+            c->sendMsg("- " + i->gen_descriptor() + "\r\n");
         }
     }
     if(!c->current_room->exits.empty()) {

@@ -11,6 +11,7 @@ std::string trim(std::string &, const std::string & = "\r\n");
 std::vector<std::string> words(std::string &);
 bool prefix(std::string, std::string);
 std::string toLower(std::string s);
+std::string toCapital(std::string s);
 
 template<typename t,
     typename = typename std::enable_if<std::is_arithmetic<t>::value>::type>

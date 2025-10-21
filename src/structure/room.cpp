@@ -7,7 +7,7 @@
 #include <structure/room.hpp>
 
 Room::Room() :
-    characters(), vnum(Mud::instance().maxRoomVnum() + 1)
+    characters(), vnum(Mud::instance().maxRoomVnum() + 1), flags(0)
 {
 }
 

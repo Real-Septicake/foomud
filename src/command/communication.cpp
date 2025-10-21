@@ -6,7 +6,7 @@
 #include <memory>
 
 void commands::loadCommsCommands() {
-    Mud::instance().addCommand(std::make_shared<Command>("say", "[@<character>] [>'<adverdb>'] <message>", "say something", commands::say));
+    Mud::instance().addCommand(std::make_shared<Command>("say", "[@<character>] [>'<adverb>'] <message>", "say something", commands::say));
     Mud::instance().addCommand(std::make_shared<Command>("tell", "<character> <message>", "tell someone something", commands::tell));
 }
 

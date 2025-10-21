@@ -10,11 +10,13 @@ void loadCommands() {
     commands::loadNavCommands();
 }
 
-Command::Command(std::string name, std::string desc, std::string args, func callback) :
-    name(name), desc(desc), args(args), callback(callback)
+Command::Command(std::string name, std::string args, std::string desc, func callback, check check_use) :
+    name(name), desc(desc), args(args), callback(callback), check_use(check_use)
 {
 }
 
 bool Command::operator()(std::shared_ptr<Character> character, Arguments &args) {
+    if(check_use && !check_use(character))
+        return false;
     return callback(character, args);
 }

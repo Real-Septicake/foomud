@@ -63,8 +63,8 @@ next:
                     stop->room->send("Train leaving for Room " + toString(next->room->vnum) + "\r\n");
                     internal_room->send("Train leaving for Room " + toString(next->room->vnum) + "\r\n");
                 } else {
+                    stop->room->send("Train leaving for Room " + toString(next->room->vnum) + "\r\n");
                     stop = next;
-                    stop->room->send("Train leaving for Room " + toString(stop->room->vnum) + "\r\n");
                     internal_room->send("Train leaving for Room " + toString(stop->room->vnum) + "\r\n");
                 }
                 leave();

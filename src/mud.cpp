@@ -2,14 +2,13 @@
 #include "characters/player.hpp"
 #include "command/command.hpp"
 #include "connection.hpp"
+#include "enums/room_flags.hpp"
 #include "input/handlers/handler.hpp"
 #include "input/handlers/name.hpp"
 #include "repeating_timer.hpp"
 #include "structure/exit.hpp"
 #include "transport/train.hpp"
 #include "updater/updater.hpp"
-#include <asm-generic/socket.h>
-#include <cerrno>
 #include <chrono>
 #include <csignal>
 #include <cstddef>
@@ -18,14 +17,7 @@
 #include <memory>
 #include <mud.hpp>
 #include <iostream>
-#include <sys/select.h>
-#include <sys/socket.h>
 #include <system_error>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
 #include <unordered_set>
 #include <structure/room.hpp>
 
@@ -73,6 +65,7 @@ bool Mud::run() {
 
     auto i = std::make_shared<Item>();
     i->name = "item";
+    i->description = "A really really really cool &N!!!";
     i->article = Article::Vowel;
     addItem(i);
     r1->addItem(i);
@@ -97,6 +90,12 @@ bool Mud::run() {
 
     t->internal_room->addExit(r0, Direction::Out);
     r0->addExit(t->internal_room, Direction::In);
+
+    auto r3 = std::make_shared<Room>();
+    addRoom(r3);
+    r3->flags |= (unsigned char) RoomFlag::Unlit;
+    r0->addExit(r3, Direction::Down);
+    r3->addExit(r0, Direction::Up);
 
     std::cout << "starting loop" << std::endl;
 

@@ -11,7 +11,7 @@
 class Character;
 
 struct CharacterParser {
-    static auto constexpr rule = LEXY_LIT("@") + lexy::dsl::ascii::alpha_underscore / LEXY_LIT("-");
+    static auto constexpr rule = LEXY_LIT("@") + (lexy::dsl::ascii::alpha / LEXY_LIT("-"));
 };
 
 std::shared_ptr<Character> parseCharacter(std::string, std::shared_ptr<Character>);

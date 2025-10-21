@@ -7,9 +7,6 @@
 #include "mud.hpp"
 #include <connection.hpp>
 #include <iostream>
-#include <utils.hpp>
-#include <sys/socket.h>
-#include <sys/types.h>
 
 Connection::Connection(asio::ip::tcp::socket s) :
     ibuf(), obuf(), sock(std::move(s)), closed(false)
