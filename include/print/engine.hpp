@@ -5,11 +5,14 @@
 #include <functional>
 #include <string>
 #include "../utils.hpp"
+#include "../items/item.hpp"
 #include <cctype>
 
 template<typename T>
 class FormatEngine {
-    std::map<char, std::function<std::string(T& ref)>> formats;
+    std::map<char, std::function<std::string(T&)>> formats;
+    std::function<bool(T&)> is_plural;
+    bool capitalize;
     char escape;
     public:
     std::string fmt(T& obj, std::string format) const {
@@ -22,24 +25,25 @@ class FormatEngine {
                     working += escape;
                     continue;
                 }
-                auto f = formats.find((char)std::tolower(format[i]));
-                if(f == formats.end()) {
+                auto f = formats.find(std::tolower(format[i]));
+                if(f == formats.end())
                     working += format[i];
-                } else {
+                else {
                     std::string v = f->second(obj);
-                    if(format[i] > 'A' && format[i] < 'Z')
+                    if(capitalize && format[i] >= 'A' && format[i] <= 'Z')
                         v = toCapital(v);
+                    if(v.contains('&'))
+                        v = fmt(obj, v);
                     working += v;
                 }
-            } else {
+            } else
                 working += format[i];
-            }
         }
         return working;
     }
 
-    FormatEngine(std::map<char, std::function<std::string(T& ref)>> formats, char escape = '&') :
-        formats(formats), escape(escape) {}
+    FormatEngine(std::map<char, std::function<std::string(T&)>> formats, bool capitalize = false, std::function<bool(T&)> is_plural = nullptr, char escape = '&') :
+        formats(formats), is_plural(is_plural), capitalize(capitalize), escape(escape) {}
 };
 
 #endif

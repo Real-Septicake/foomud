@@ -1,8 +1,7 @@
 #ifndef ITEMS_HPP
 #define ITEMS_HPP
 
-#include "enums/article.hpp"
-#include "print/engine.hpp"
+#include "../enums/article.hpp"
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -10,6 +9,9 @@
 class Room;
 
 class Character;
+
+template<typename>
+class FormatEngine;
 
 class Item {
     private:
@@ -21,8 +23,9 @@ class Item {
         Article article;
         std::size_t vnum;
         std::string name;
-        // &A = article
-        // &N = name
+        int count;
+        // &a = article
+        // &n = name
         std::string description;
         std::string gen_descriptor();
 };
